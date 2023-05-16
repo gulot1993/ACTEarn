@@ -1,7 +1,8 @@
-package com.example.actearn
+package com.example.actearn.core
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.example.actearn.R
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
