@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class Points(
-    @PrimaryKey(autoGenerate = true) val id: Int,
-    @ColumnInfo(name = "user_id") val userId: Int,
+    @PrimaryKey(autoGenerate = true) val pointsId: Int,
+    val userOwnerId: Int,
+    val points: Int
 )
