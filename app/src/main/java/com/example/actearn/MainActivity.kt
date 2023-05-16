@@ -1,4 +1,4 @@
-package com.example.actearn.core
+package com.example.actearn
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
