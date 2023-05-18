@@ -5,6 +5,12 @@
     android:id="@+id/master_graph"
     app:startDestination="@id/splashFragment">
 
+    <action
+        android:id="@+id/logoutNavigation"
+        app:destination="@+id/loginFragment"
+        app:popUpTo="@id/master_graph"
+        app:popUpToInclusive="true"/>
+
     <fragment
         android:id="@+id/splashFragment"
         android:name="com.example.actearn.feature.splash.SplashFragment"
@@ -12,6 +18,12 @@
         <action
             android:id="@+id/action_splashFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_splashFragment_to_studentHomeFragment"
+            app:destination="@id/studentHomeFragment" />
+        <action
+            android:id="@+id/action_splashFragment_to_professorHomeFragment"
+            app:destination="@id/professorHomeFragment" />
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
@@ -20,10 +32,24 @@
         <action
             android:id="@+id/action_loginFragment_to_signUpFragment"
             app:destination="@id/signUpFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_studentHomeFragment"
+            app:destination="@id/studentHomeFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_professorHomeFragment"
+            app:destination="@id/professorHomeFragment" />
     </fragment>
     <fragment
         android:id="@+id/signUpFragment"
         android:name="com.example.actearn.feature.signup.SignUpFragment"
         tools:layout="@layout/fragment_signup"/>
 
+    <fragment
+        android:id="@+id/studentHomeFragment"
+        android:name="com.example.actearn.feature.home.student.StudentHomeFragment"
+        tools:layout="@layout/fragment_dashboard"/>
+    <fragment
+        android:id="@+id/professorHomeFragment"
+        android:name="com.example.actearn.feature.home.professor.ProfessorHomeFragment"
+        tools:layout="@layout/fragment_professor"/>
 </navigation>

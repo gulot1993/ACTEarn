@@ -41,6 +41,22 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>() {
                                 SplashFragmentDirections
                                     .actionSplashFragmentToLoginFragment()
                             )
+                    } else {
+                        viewModel.getUserLoggedIn()?.let {
+                            if (it.role == "Professor") {
+                                findNavController()
+                                    .navigate(
+                                        SplashFragmentDirections
+                                            .actionSplashFragmentToProfessorHomeFragment()
+                                    )
+                            } else {
+                                findNavController()
+                                    .navigate(
+                                        SplashFragmentDirections
+                                            .actionSplashFragmentToStudentHomeFragment()
+                                    )
+                            }
+                        }
                     }
                 },
                 onError = {
