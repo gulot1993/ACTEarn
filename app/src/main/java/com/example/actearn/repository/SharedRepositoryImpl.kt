@@ -4,6 +4,7 @@ import com.example.actearn.core.PreferenceHelper
 import com.example.actearn.database.AppDatabase
 import com.example.actearn.model.entity.Points
 import com.example.actearn.model.entity.User
+import com.example.actearn.model.entity.UserWithPoint
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 import javax.inject.Inject
@@ -57,5 +58,9 @@ class SharedRepositoryImpl @Inject constructor(
 
     override fun savePoints(points: Int, userOwnerId: Int): Completable {
         return database.pointsDao().savePoints(Points(userOwnerId = userOwnerId, points = points))
+    }
+
+    override fun getUserAndPoints(userId: Int): Single<List<UserWithPoint>> {
+        return database.userDao().getUserAndPoints(userId)
     }
 }

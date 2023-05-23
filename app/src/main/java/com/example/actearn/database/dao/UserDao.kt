@@ -2,6 +2,7 @@ package com.example.actearn.database.dao
 
 import androidx.room.*
 import com.example.actearn.model.entity.User
+import com.example.actearn.model.entity.UserWithPoint
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 
@@ -15,4 +16,8 @@ interface UserDao {
 
     @Query("UPDATE User SET hasClaimedPoints = :hasClaimedPoints where userId = :userId")
     fun updateUserHasClaimedPoints(hasClaimedPoints: Boolean, userId: Int): Completable
+
+    @Transaction
+    @Query("SELECT * FROM User where userId = :userId")
+    fun getUserAndPoints(userId: Int): Single<List<UserWithPoint>>
 }

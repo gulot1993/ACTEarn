@@ -9,5 +9,5 @@ data class UserWithPoint(
         parentColumn = "userId",
         entityColumn = "userOwnerId"
     )
-    val points: Points
+    val points: List<Points>
 )
