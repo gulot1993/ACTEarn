@@ -25,4 +25,8 @@ interface SharedRepository {
     fun getLoggedInUser(): com.example.actearn.model.domain.User?
 
     fun setIsLoggedIn(isLoggedIn: Boolean)
+
+    fun updateUser(user: com.example.actearn.model.domain.User): Completable
+
+    fun savePoints(points: Int, userOwnerId: Int): Completable
 }

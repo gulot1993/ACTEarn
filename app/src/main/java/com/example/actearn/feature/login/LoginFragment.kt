@@ -8,6 +8,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.actearn.R
 import com.example.actearn.core.BaseFragment
 import com.example.actearn.databinding.FragmentLoginBinding
+import com.example.actearn.model.domain.User
 import com.example.actearn.model.entity.User.Companion.toDomain
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -15,6 +16,7 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
+import timber.log.Timber
 
 @AndroidEntryPoint
 class LoginFragment : BaseFragment<FragmentLoginBinding>() {
@@ -41,37 +43,77 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
         }
 
         binding?.btnLogin?.setOnClickListener {
-            viewModel
-                .signIn(
-                    binding!!.etEmail.text.toString(),
-                    binding!!.etPassword.text.toString()
-                )
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                    onError = { },
-                    onSuccess = {
-                        val userDomain = it.toDomain()
-                        viewModel.saveUser(userDomain)
-                        viewModel.setIsLoggedIn()
-
-                        if (userDomain.role == "Professor") {
-                            findNavController()
-                                .navigate(
-                                    LoginFragmentDirections
-                                        .actionLoginFragmentToProfessorHomeFragment()
-                                )
-                        } else {
-                            findNavController()
-                                .navigate(
-                                    LoginFragmentDirections
-                                        .actionLoginFragmentToStudentHomeFragment()
-                                )
-                        }
-                    }
-                )
-                .addTo(disposables)
+            signIn(
+                binding!!.etEmail.text.toString(),
+                binding!!.etPassword.text.toString()
+            )
         }
+    }
+
+    private fun signIn(userName: String, password: String) {
+        viewModel
+            .signIn(
+                userName,
+                password
+            )
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onError = { },
+                onSuccess = {
+                    val userDomain = it.toDomain()
+                    viewModel.saveUser(userDomain)
+                    viewModel.setIsLoggedIn()
+
+                    if (userDomain.role == "Professor") {
+                        findNavController()
+                            .navigate(
+                                LoginFragmentDirections
+                                    .actionLoginFragmentToProfessorHomeFragment()
+                            )
+                    } else {
+                        Timber.d("logged in: ${userDomain.hasClaimedPoints}")
+                        if (!userDomain.hasClaimedPoints) {
+                            userDomain.hasClaimedPoints = true
+                            claimPoints(userDomain)
+                        } else {
+                            navigateToStudentHome()
+                        }
+
+                    }
+                }
+            )
+            .addTo(disposables)
+    }
+
+    private fun claimPoints(user: User) {
+        viewModel
+            .savePoints(user.id)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy {
+                updateUserClaimedPoints(user)
+            }
+            .addTo(disposables)
+    }
+
+    private fun navigateToStudentHome() {
+        findNavController()
+            .navigate(
+                LoginFragmentDirections
+                    .actionLoginFragmentToStudentHomeFragment()
+            )
+    }
+
+    private fun updateUserClaimedPoints(user: User) {
+        viewModel
+            .updateUser(user)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy {
+                navigateToStudentHome()
+            }
+            .addTo(disposables)
     }
 
     override fun onDestroyView() {

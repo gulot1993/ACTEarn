@@ -2,6 +2,7 @@ package com.example.actearn.repository
 
 import com.example.actearn.core.PreferenceHelper
 import com.example.actearn.database.AppDatabase
+import com.example.actearn.model.entity.Points
 import com.example.actearn.model.entity.User
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
@@ -48,5 +49,13 @@ class SharedRepositoryImpl @Inject constructor(
 
     override fun setIsLoggedIn(isLoggedIn: Boolean) {
         preferenceHelper.setIsLoggedIn(isLoggedIn)
+    }
+
+    override fun updateUser(user: com.example.actearn.model.domain.User): Completable {
+        return database.userDao().updateUserHasClaimedPoints(user.hasClaimedPoints, user.id)
+    }
+
+    override fun savePoints(points: Int, userOwnerId: Int): Completable {
+        return database.pointsDao().savePoints(Points(userOwnerId = userOwnerId, points = points))
     }
 }

@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">ACTEarn</string>
+
+    <string-array name="subjects">
+        <item>Math</item>
+        <item>Science</item>
+    </string-array>
 </resources>

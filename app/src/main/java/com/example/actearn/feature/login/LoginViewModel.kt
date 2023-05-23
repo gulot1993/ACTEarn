@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.example.actearn.model.entity.User
 import com.example.actearn.repository.SharedRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 import javax.inject.Inject
 
@@ -19,4 +20,8 @@ class LoginViewModel @Inject constructor(
     fun saveUser(user: com.example.actearn.model.domain.User) = repository.saveUser(user)
 
     fun setIsLoggedIn() = repository.setIsLoggedIn(true)
+
+    fun updateUser(user: com.example.actearn.model.domain.User): Completable = repository.updateUser(user)
+
+    fun savePoints(userOwnerId: Int): Completable = repository.savePoints(1, userOwnerId)
 }

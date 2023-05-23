@@ -17,7 +17,7 @@ data class User(
     companion object {
         fun User.toDomain(): com.example.actearn.model.domain.User {
             return com.example.actearn.model.domain.User(
-                username, password, firstname, lastname, role
+                userId, username, password, firstname, lastname, role, hasClaimedPoints ?: false
             )
         }
     }
