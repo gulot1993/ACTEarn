@@ -51,5 +51,14 @@
     <fragment
         android:id="@+id/professorHomeFragment"
         android:name="com.example.actearn.feature.home.professor.ProfessorHomeFragment"
-        tools:layout="@layout/fragment_professor"/>
+        tools:layout="@layout/fragment_professor">
+        <action
+            android:id="@+id/action_professorHomeFragment_to_addActivityFragment"
+            app:destination="@id/addActivityFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/addActivityFragment"
+        android:name="com.example.actearn.feature.activity.add.AddActivityFragment"
+        tools:layout="@layout/fragment_add_activity"/>
 </navigation>

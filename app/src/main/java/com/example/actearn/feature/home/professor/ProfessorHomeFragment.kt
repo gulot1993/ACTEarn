@@ -29,5 +29,12 @@ class ProfessorHomeFragment : BaseFragment<FragmentProfessorBinding>(){
             viewModel.logout()
             findNavController().navigate(R.id.logoutNavigation)
         }
+
+        binding?.imageView9?.setOnClickListener {
+            findNavController()
+                .navigate(
+                    ProfessorHomeFragmentDirections.actionProfessorHomeFragmentToAddActivityFragment()
+                )
+        }
     }
 }
