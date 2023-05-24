@@ -41,4 +41,8 @@ interface SharedRepository {
     fun getQuestionByDescription(question: String): Single<Question>
 
     fun saveChoices(choices: Choices): Completable
+
+    fun getAllProfessors(): Single<List<User>>
+
+    fun getActivitiesByProfAndSubject(profId: Int, subject: String): Single<List<Activity>>
 }

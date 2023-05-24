@@ -47,7 +47,11 @@
     <fragment
         android:id="@+id/studentHomeFragment"
         android:name="com.example.actearn.feature.home.student.StudentHomeFragment"
-        tools:layout="@layout/fragment_dashboard"/>
+        tools:layout="@layout/fragment_dashboard">
+        <action
+            android:id="@+id/action_studentHomeFragment_to_subjectFragment"
+            app:destination="@id/subjectFragment" />
+    </fragment>
     <fragment
         android:id="@+id/professorHomeFragment"
         android:name="com.example.actearn.feature.home.professor.ProfessorHomeFragment"
@@ -61,4 +65,9 @@
         android:id="@+id/addActivityFragment"
         android:name="com.example.actearn.feature.activity.add.AddActivityFragment"
         tools:layout="@layout/fragment_add_activity"/>
+
+    <fragment
+        android:id="@+id/subjectFragment"
+        android:name="com.example.actearn.feature.activity.subject.SubjectFragment"
+        tools:layout="@layout/fragment_subject"/>
 </navigation>

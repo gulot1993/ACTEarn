@@ -15,4 +15,7 @@ interface ActivityDao {
 
     @Query("SELECT * FROM Activity where activityName = :name")
     fun getActivityByName(name: String): Single<Activity>
+
+    @Query("SELECT * FROM Activity where userOwnerId = :profId and subject = :subject")
+    fun getActivityBySubject(profId: Int, subject: String): Single<List<Activity>>
 }

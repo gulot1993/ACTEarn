@@ -81,4 +81,12 @@ class SharedRepositoryImpl @Inject constructor(
     override fun saveChoices(choices: Choices): Completable {
         return database.choicesDao().insertChoice(choices)
     }
+
+    override fun getAllProfessors(): Single<List<User>> {
+        return database.userDao().getAllProfessors()
+    }
+
+    override fun getActivitiesByProfAndSubject(profId: Int, subject: String): Single<List<Activity>> {
+        return database.activityDao().getActivityBySubject(profId, subject)
+    }
 }
