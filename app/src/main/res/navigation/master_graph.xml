@@ -69,5 +69,19 @@
     <fragment
         android:id="@+id/subjectFragment"
         android:name="com.example.actearn.feature.activity.subject.SubjectFragment"
-        tools:layout="@layout/fragment_subject"/>
+        tools:layout="@layout/fragment_subject">
+        <action
+            android:id="@+id/action_subjectFragment_to_takeQuizFragment"
+            app:destination="@id/takeQuizFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/takeQuizFragment"
+        android:name="com.example.actearn.feature.activity.take.TakeQuizFragment"
+        tools:layout="@layout/fragment_take_quiz">
+
+        <argument
+            android:name="activityId"
+            app:argType="integer"/>
+    </fragment>
 </navigation>

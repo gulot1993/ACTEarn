@@ -59,7 +59,9 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
-                onError = { },
+                onError = {
+                      Toast.makeText(requireContext(), "No users found", Toast.LENGTH_LONG).show()
+                },
                 onSuccess = {
                     val userDomain = it.toDomain()
                     viewModel.saveUser(userDomain)

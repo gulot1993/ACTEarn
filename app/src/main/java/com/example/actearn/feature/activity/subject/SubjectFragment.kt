@@ -7,6 +7,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.actearn.R
 import com.example.actearn.core.BaseFragment
@@ -62,10 +63,14 @@ class SubjectFragment :
                 Timber.d("activity taken: $it")
                 adapter = SubjectActivityAdapter(
                     requireContext(),
-                    it, {
-
-                    }
-                )
+                    it
+                ) {
+                    findNavController()
+                        .navigate(
+                            SubjectFragmentDirections
+                                .actionSubjectFragmentToTakeQuizFragment(it.activityId)
+                        )
+                }
                 binding!!.tvNoActivities.isVisible = it.isEmpty()
                 binding!!.rvActivities.apply {
                     isVisible = !it.isEmpty()
