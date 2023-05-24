@@ -21,6 +21,7 @@ class DatabaseModule {
             AppDatabase::class.java,
             "act_earn"
         )
+        .fallbackToDestructiveMigration()
         .build()
     }
 }

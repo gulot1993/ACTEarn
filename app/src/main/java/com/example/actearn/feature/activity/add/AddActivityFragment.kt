@@ -5,13 +5,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.actearn.R
 import com.example.actearn.core.BaseFragment
 import com.example.actearn.databinding.FragmentAddActivityBinding
 import com.example.actearn.feature.activity.add.adapter.QuestionaireAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.kotlin.addTo
+import io.reactivex.rxjava3.kotlin.subscribeBy
+import io.reactivex.rxjava3.schedulers.Schedulers
 import timber.log.Timber
 
 @AndroidEntryPoint
@@ -21,6 +28,7 @@ class AddActivityFragment :
 
     private val viewModel: AddActivityViewModel by activityViewModels()
     private var adapter: QuestionaireAdapter? = null
+    private val disposables = CompositeDisposable()
     override fun resId(): Int {
         return R.layout.fragment_add_activity
     }
@@ -53,16 +61,44 @@ class AddActivityFragment :
                 adapter?.setItems(it)
             }
         }
+
+        viewModel.doneSaving.observe(viewLifecycleOwner) {
+            if (it) {
+                Toast.makeText(requireContext(), "Activity Saved!", Toast.LENGTH_LONG).show()
+                findNavController().popBackStack()
+            }
+        }
     }
 
     private fun setupListeners() {
         binding?.btnSubmit?.setOnClickListener {
+            binding?.btnSubmit?.isEnabled = false
+            Toast.makeText(requireContext(), "Saving pls wait..", Toast.LENGTH_LONG).show()
+            val subjects = resources.getStringArray(R.array.subjects)
+            val subject = subjects[binding?.spinner?.selectedItemPosition ?: 0]
+            val activity = binding?.etActivityName?.text.toString()
+            viewModel.saveQuestions(activity, subject)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy {
+                    getActivityByName(activity)
+                }
+                .addTo(compositeDisposable = disposables)
 
         }
 
         binding?.tvAddQuestionaires?.setOnClickListener {
             viewModel.addEmptyQuestionaire()
         }
+    }
+    private fun getActivityByName(name: String) {
+        viewModel.getActivityByName(name)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy {
+                viewModel.insertQuestions(it.activityId)
+            }
+            .addTo(compositeDisposable = disposables)
     }
 
     private fun setupSpinner() {
@@ -91,6 +127,7 @@ class AddActivityFragment :
 
     override fun onDestroyView() {
         adapter = null
+        disposables.clear()
         super.onDestroyView()
     }
 }

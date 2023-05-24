@@ -2,9 +2,7 @@ package com.example.actearn.repository
 
 import com.example.actearn.core.PreferenceHelper
 import com.example.actearn.database.AppDatabase
-import com.example.actearn.model.entity.Points
-import com.example.actearn.model.entity.User
-import com.example.actearn.model.entity.UserWithPoint
+import com.example.actearn.model.entity.*
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 import javax.inject.Inject
@@ -62,5 +60,25 @@ class SharedRepositoryImpl @Inject constructor(
 
     override fun getUserAndPoints(userId: Int): Single<List<UserWithPoint>> {
         return database.userDao().getUserAndPoints(userId)
+    }
+
+    override fun saveActivity(activityName: String, subject: String): Completable {
+        return database.activityDao().saveActivity(Activity(activityName = activityName, subject = subject, userOwnerId = preferenceHelper.getLoggedInUser()?.id!!))
+    }
+
+    override fun getActivityByName(activityName: String): Single<Activity> {
+        return database.activityDao().getActivityByName(activityName)
+    }
+
+    override fun saveQuestion(question: String, activityId: Int, choicesCorrectAnswerIndex: Int): Completable {
+        return database.questionDao().insertQuestion(Question(question = question, activityOwnerId = activityId, choicesCorrectAnswerIndex = choicesCorrectAnswerIndex))
+    }
+
+    override fun getQuestionByDescription(question: String): Single<Question> {
+        return database.questionDao().getQuestionByQuestionDescription(question)
+    }
+
+    override fun saveChoices(choices: Choices): Completable {
+        return database.choicesDao().insertChoice(choices)
     }
 }

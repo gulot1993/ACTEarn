@@ -1,7 +1,6 @@
 package com.example.actearn.repository
 
-import com.example.actearn.model.entity.User
-import com.example.actearn.model.entity.UserWithPoint
+import com.example.actearn.model.entity.*
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 
@@ -32,4 +31,14 @@ interface SharedRepository {
     fun savePoints(points: Int, userOwnerId: Int): Completable
 
     fun getUserAndPoints(userId: Int): Single<List<UserWithPoint>>
+
+    fun saveActivity(activityName: String, subject: String): Completable
+
+    fun getActivityByName(activityName: String): Single<Activity>
+
+    fun saveQuestion(question: String, activityId: Int, choicesCorrectAnswerIndex: Int): Completable
+
+    fun getQuestionByDescription(question: String): Single<Question>
+
+    fun saveChoices(choices: Choices): Completable
 }
