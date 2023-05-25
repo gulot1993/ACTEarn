@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -83,7 +84,6 @@ class StudentRecordFragment :
                                     requireContext(),
                                     users
                                 ) { user ->
-
                                     viewModel
                                         .getQuestionByActivityId(activityId = activityId)
                                         .subscribeOn(Schedulers.io())
@@ -101,17 +101,23 @@ class StudentRecordFragment :
                                                         .subscribeOn(Schedulers.io())
                                                         .observeOn(AndroidSchedulers.mainThread())
                                                         .subscribeBy {
-                                                            quizItemsData.add(it[0])
-                                                            if (quizItemsData.size == questionsList.size) {
-                                                                var average = 0F
-                                                                val passed = if (quizItemsData.isNotEmpty())  {
-                                                                    average = (quizItemsData.map { it.isAnswerCorrect }.count().toFloat() / questionsList.size.toFloat()) * 100F
-                                                                    average >= 80
-                                                                } else {
-                                                                    false
-                                                                }
+                                                            if (it.isEmpty()) {
+                                                                Toast.makeText(requireContext(), "Not taken exam yet", Toast.LENGTH_LONG).show()
+                                                            } else {
+                                                                quizItemsData.add(it[0])
+                                                                if (quizItemsData.size == questionsList.size) {
+                                                                    var average = 0F
+                                                                    val passed = if (quizItemsData.isNotEmpty())  {
+                                                                        average = (quizItemsData.filter { it.isAnswerCorrect }.count().toFloat() / questionsList.size.toFloat()) * 100F
+                                                                        average >= 80
+                                                                    } else {
+                                                                        false
+                                                                    }
 
-                                                                showBottomSheet(average, user, passed)
+                                                                    Timber.d("correct answer count ${quizItemsData.map { it.isAnswerCorrect }.count()} ${questionsList.size}")
+
+                                                                    showBottomSheet(average, user, passed)
+                                                                }
                                                             }
 
                                                         }
