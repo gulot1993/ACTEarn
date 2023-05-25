@@ -77,6 +77,7 @@ class StudentRecordFragment :
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribeBy {
+                                val points = it[0].points.sumOf { it.points }.toString()
                                 it.map {
                                    users.add(it.user)
                                 }
@@ -116,7 +117,8 @@ class StudentRecordFragment :
 
                                                                     Timber.d("correct answer count ${quizItemsData.map { it.isAnswerCorrect }.count()} ${questionsList.size}")
 
-                                                                    showBottomSheet(average, user, passed)
+                                                                    Timber.d("total points $")
+                                                                    showBottomSheet(average, user, passed, points)
                                                                 }
                                                             }
 
@@ -196,14 +198,15 @@ class StudentRecordFragment :
         super.onDestroy()
     }
 
-    private fun showBottomSheet(average: Float, user: User, isPassed: Boolean) {
+    private fun showBottomSheet(average: Float, user: User, isPassed: Boolean, usrPoints: String) {
         val bottomsheet = BottomSheetDialog(requireContext())
         bottomsheet.setContentView(R.layout.layout_bottomsheet_user_data)
         val name = bottomsheet.findViewById<MaterialTextView>(R.id.tvStudentName)
         val remarks = bottomsheet.findViewById<MaterialTextView>(R.id.tvRemarks)
-        val avg = bottomsheet.findViewById<MaterialTextView>(R.id.tvAverage)
+        val points = bottomsheet.findViewById<MaterialTextView>(R.id.tvPoints)
         remarks?.text = if (isPassed) "Passed" else "Failed"
         name?.text = "${user.firstname} ${user.lastname}"
+        points?.text = "Total points: $usrPoints"
         bottomsheet.show()
     }
 }
