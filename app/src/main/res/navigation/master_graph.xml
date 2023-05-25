@@ -69,8 +69,8 @@
             android:id="@+id/action_professorHomeFragment_to_addActivityFragment"
             app:destination="@id/addActivityFragment" />
         <action
-            android:id="@+id/action_professorHomeFragment_self"
-            app:destination="@id/professorHomeFragment" />
+            android:id="@+id/action_professorHomeFragment_to_viewStudentRecords"
+            app:destination="@id/viewStudentRecords" />
     </fragment>
 
     <fragment
@@ -115,4 +115,9 @@
         android:id="@+id/addRewardFragment"
         android:name="com.example.actearn.feature.rewards.add.AddRewardFragment"
         tools:layout="@layout/fragment_add_reward"/>
+
+    <fragment
+        android:id="@+id/viewStudentRecords"
+        android:name="com.example.actearn.feature.records.StudentRecordFragment"
+        tools:layout="@layout/fragment_student_records"/>
 </navigation>

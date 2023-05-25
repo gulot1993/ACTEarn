@@ -72,22 +72,6 @@ class SubjectFragment :
                         getQuestionsByActivityId(it, activities)
                     }
                     .addTo(disposables)
-//                adapter = SubjectActivityAdapter(
-//                    requireContext(),
-//                    activities
-//                ) {
-//                    findNavController()
-//                        .navigate(
-//                            SubjectFragmentDirections
-//                                .actionSubjectFragmentToTakeQuizFragment(it.activityId)
-//                        )
-//                }
-//                binding!!.tvNoActivities.isVisible = activities.isEmpty()
-//                binding!!.rvActivities.apply {
-//                    isVisible = !activities.isEmpty()
-//                    adapter = this@SubjectFragment.adapter
-//                    layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-//                }
             }
             .addTo(disposables)
     }

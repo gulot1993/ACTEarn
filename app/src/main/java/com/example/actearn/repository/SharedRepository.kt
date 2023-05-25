@@ -52,9 +52,13 @@ interface SharedRepository {
 
     fun saveStudentAnswer(questionId: Int, answerIndex: Int, isAnswerCorrect: Boolean): Completable
 
-    fun getAllAnswersByQuestion(questionId: Int): Single<List<StudentAnswer>>
+    fun getAllAnswersByQuestion(questionId: Int, userId: Int): Single<List<StudentAnswer>>
 
     fun addReward(name: String, points: Int): Completable
 
     fun getRewards(): Single<List<Reward>>
+
+    fun getAllAnswersByQuestionId(questionId: Int): Single<List<StudentAnswer>>
+
+    fun getDistinctUserIdFromAnswers(): Single<List<Int>>
 }

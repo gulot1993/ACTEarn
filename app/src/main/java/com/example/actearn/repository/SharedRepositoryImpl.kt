@@ -102,8 +102,8 @@ class SharedRepositoryImpl @Inject constructor(
         return database.studentAnswerDao().saveAnswer(StudentAnswer(userId = preferenceHelper.getLoggedInUser()!!.id, questionOwnerId = questionId, answerIndex = answerIndex, isAnswerCorrect = isAnswerCorrect))
     }
 
-    override fun getAllAnswersByQuestion(questionId: Int): Single<List<StudentAnswer>> {
-        return database.studentAnswerDao().getAllAnswersByQuestionIdAndUserId(questionId, preferenceHelper.getLoggedInUser()!!.id)
+    override fun getAllAnswersByQuestion(questionId: Int, userId: Int): Single<List<StudentAnswer>> {
+        return database.studentAnswerDao().getAllAnswersByQuestionIdAndUserId(questionId, userId)
     }
 
     override fun addReward(name: String, points: Int): Completable {
@@ -112,5 +112,13 @@ class SharedRepositoryImpl @Inject constructor(
 
     override fun getRewards(): Single<List<Reward>> {
         return database.rewardsDao().getAllRewards()
+    }
+
+    override fun getAllAnswersByQuestionId(questionId: Int): Single<List<StudentAnswer>> {
+        return database.studentAnswerDao().getAllAnswersByQuestionId(questionId)
+    }
+
+    override fun getDistinctUserIdFromAnswers(): Single<List<Int>> {
+        return database.studentAnswerDao().getStudentsAnswerDistinctById()
     }
 }
