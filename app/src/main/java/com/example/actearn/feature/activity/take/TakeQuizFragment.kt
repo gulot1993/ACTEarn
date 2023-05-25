@@ -1,6 +1,7 @@
 package com.example.actearn.feature.activity.take
 
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
@@ -16,6 +17,9 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.kotlin.subscribeBy
+import java.lang.String
+import java.util.*
+import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class TakeQuizFragment : BaseFragment<FragmentTakeQuizBinding>() {
@@ -25,6 +29,8 @@ class TakeQuizFragment : BaseFragment<FragmentTakeQuizBinding>() {
     private var adapter: TakeQuizQuestionAdapter? = null
 
     private val disposables = CompositeDisposable()
+
+    private var countDownTimer: CountDownTimer? = null
     override fun resId(): Int {
         return R.layout.fragment_take_quiz
     }
@@ -34,6 +40,7 @@ class TakeQuizFragment : BaseFragment<FragmentTakeQuizBinding>() {
 
         setupViewModel()
         setupListeners()
+        startTimer()
     }
 
     private fun setupListeners() {
@@ -87,8 +94,37 @@ class TakeQuizFragment : BaseFragment<FragmentTakeQuizBinding>() {
     }
 
     override fun onDestroyView() {
+        countDownTimer?.cancel()
+        countDownTimer = null
         adapter = null
         disposables.clear()
         super.onDestroyView()
+    }
+
+    private fun startTimer() {
+        countDownTimer = object : CountDownTimer(3600000, 1) {
+            override fun onTick(millisUntilFinished: Long) {
+                val hours = TimeUnit.MILLISECONDS.toHours(millisUntilFinished).toInt()
+                val minutes = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) % TimeUnit.HOURS.toMinutes(1).toInt()
+                val seconds = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) % TimeUnit.MINUTES.toSeconds(
+                        1
+                    ).toInt()
+
+                val timeLeftFormatted =
+                    String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, seconds)
+                binding!!.tvTimer.setText(timeLeftFormatted)
+            }
+
+            override fun onFinish() {
+                binding!!.tvTimer.setText("Time is Up!!")
+                binding!!.tvSubmit.performClick()
+            }
+        }.start()
+    }
+
+    override fun onDestroy() {
+        countDownTimer?.cancel()
+        countDownTimer = null
+        super.onDestroy()
     }
 }
