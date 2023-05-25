@@ -3,9 +3,12 @@ package com.example.actearn.feature.home.student
 import androidx.lifecycle.ViewModel
 import com.example.actearn.core.PreferenceHelper
 import com.example.actearn.model.domain.User
+import com.example.actearn.model.entity.Reward
+import com.example.actearn.model.entity.StudentRewardClaimed
 import com.example.actearn.model.entity.UserWithPoint
 import com.example.actearn.repository.SharedRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
 import javax.inject.Inject
 
@@ -19,5 +22,11 @@ class StudentHomeViewModel @Inject constructor(
     fun getLoggedInUser(): User? = repository.getLoggedInUser()
 
     fun getPointsAndUser(): Single<List<UserWithPoint>> = repository.getUserAndPoints(userId = getLoggedInUser()!!.id)
+
+    fun getAllRewards(): Single<List<Reward>> = repository.getRewards()
+
+    fun claimReward(rewardId: Int): Completable = repository.saveClaimedReward(rewardId)
+
+    fun getAllClaimedRewards(): Single<List<StudentRewardClaimed>> = repository.getAllRewardsFromUser()
 
 }

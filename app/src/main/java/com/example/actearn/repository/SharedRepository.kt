@@ -61,4 +61,8 @@ interface SharedRepository {
     fun getAllAnswersByQuestionId(questionId: Int): Single<List<StudentAnswer>>
 
     fun getDistinctUserIdFromAnswers(): Single<List<Int>>
+
+    fun saveClaimedReward(rewardId: Int): Completable
+
+    fun getAllRewardsFromUser(): Single<List<StudentRewardClaimed>>
 }

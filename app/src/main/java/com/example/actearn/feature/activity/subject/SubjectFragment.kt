@@ -14,6 +14,7 @@ import com.example.actearn.core.BaseFragment
 import com.example.actearn.databinding.FragmentSubjectBinding
 import com.example.actearn.feature.activity.subject.adapter.SubjectActivityAdapter
 import com.example.actearn.model.entity.Activity
+import com.example.actearn.model.entity.StudentAnswer
 import com.example.actearn.model.entity.User
 import com.example.actearn.model.modelview.QuizSubjectData
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,6 +35,7 @@ class SubjectFragment :
     private val viewModel: SubjectViewModel by activityViewModels()
     private val disposables = CompositeDisposable()
     private var adapter: SubjectActivityAdapter? = null
+    private var adapter2: SubjectActivityAdapter? = null
 
     override fun resId(): Int {
         return R.layout.fragment_subject
@@ -77,6 +79,8 @@ class SubjectFragment :
     }
 
     private fun getQuestionsByActivityId(activity: Activity, activities: List<Activity>) {
+        val quizItemsData = mutableListOf<QuizSubjectData>()
+        val answers = mutableListOf<StudentAnswer>()
         viewModel
             .getQuestionByActivityId(activityId = activity.activityId)
             .subscribeOn(Schedulers.io())
@@ -86,36 +90,58 @@ class SubjectFragment :
                     .fromIterable(questions)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeBy {
+                    .subscribeBy { question ->
                         viewModel
-                            .getAnswersByQuestionId(it.questionId)
+                            .getAnswersByQuestionId(question.questionId)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribeBy {
-                                val quizItemsData = mutableListOf<QuizSubjectData>()
-                                if (it.isNotEmpty())  {
-                                    val average = (it.map { it.isAnswerCorrect }.count().toFloat() / questions.size.toFloat()) * 100F
-                                    val isPassed = average >= 80
-                                    quizItemsData.add(QuizSubjectData(activity, isPassed))
-                                } else {
-                                    quizItemsData.add(QuizSubjectData(activity, null))
-                                }
-
-                                adapter = SubjectActivityAdapter(
-                                    requireContext(),
-                                    quizItemsData
-                                ) {
-                                    findNavController()
-                                        .navigate(
-                                            SubjectFragmentDirections
-                                                .actionSubjectFragmentToTakeQuizFragment(it.activity.activityId)
-                                        )
-                                }
                                 binding!!.tvNoActivities.isVisible = activities.isEmpty()
-                                binding!!.rvActivities.apply {
-                                    isVisible = !activities.isEmpty()
-                                    adapter = this@SubjectFragment.adapter
-                                    layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+                                if (it.isNotEmpty()) {
+                                    answers.add(it[0])
+                                    if (questions.size == answers.size) {
+                                        val average = (answers.filter { it.isAnswerCorrect }.count().toFloat() / questions.size.toFloat()) * 100F
+                                        val isPassed = average >= 80
+                                        quizItemsData.add(QuizSubjectData(activity, isPassed))
+
+                                        adapter = SubjectActivityAdapter(
+                                            requireContext(),
+                                            quizItemsData
+                                        ) {
+                                            findNavController()
+                                                .navigate(
+                                                    SubjectFragmentDirections
+                                                        .actionSubjectFragmentToTakeQuizFragment(it.activity.activityId)
+                                                )
+                                        }
+                                        binding!!.rvActivities.apply {
+                                            isVisible = !activities.isEmpty()
+                                            adapter = this@SubjectFragment.adapter
+                                            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+                                        }
+                                    }
+                                } else {
+                                    val emptyQuizItemsData = mutableListOf<QuizSubjectData>()
+                                    val userId = viewModel.getCurrentLoggedInStudent().id
+                                    answers.add(StudentAnswer(userId, question.questionId, -1, -1, false))
+                                    emptyQuizItemsData.add(QuizSubjectData(activity, null))
+
+                                    adapter2 = SubjectActivityAdapter(
+                                        requireContext(),
+                                        emptyQuizItemsData
+                                    ) {
+                                        findNavController()
+                                            .navigate(
+                                                SubjectFragmentDirections
+                                                    .actionSubjectFragmentToTakeQuizFragment(it.activity.activityId)
+                                            )
+                                    }
+                                    binding!!.tvAvailableActivities.isVisible = !activities.isEmpty()
+                                    binding!!.rvA.apply {
+                                        isVisible = !activities.isEmpty()
+                                        adapter = this@SubjectFragment.adapter2
+                                        layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+                                    }
                                 }
                             }
                             .addTo(disposables)

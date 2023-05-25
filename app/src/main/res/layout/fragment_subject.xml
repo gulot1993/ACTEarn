@@ -78,5 +78,20 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
 
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tvAvailableActivities"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:text="Available Activites to be answered: "
+            app:layout_constraintTop_toBottomOf="@id/rvActivities"
+            app:layout_constraintStart_toStartOf="parent"/>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvA"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/tvAvailableActivities"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

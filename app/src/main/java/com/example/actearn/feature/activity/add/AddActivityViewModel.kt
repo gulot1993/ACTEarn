@@ -125,4 +125,10 @@ class AddActivityViewModel @Inject constructor(
         disposables.clear()
         super.onCleared()
     }
+
+    fun resetDoneSaving() {
+        _questionsWithChoices.value?.clear()
+        _questionsWithChoices.value = mutableListOf()
+        _doneSaving.value = false
+    }
 }

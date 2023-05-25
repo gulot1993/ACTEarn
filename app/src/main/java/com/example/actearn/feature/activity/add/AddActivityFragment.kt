@@ -72,7 +72,6 @@ class AddActivityFragment :
 
     private fun setupListeners() {
         binding?.btnSubmit?.setOnClickListener {
-            binding?.btnSubmit?.isEnabled = false
             val subjects = resources.getStringArray(R.array.subjects)
             val subject = subjects[binding?.spinner?.selectedItemPosition ?: 0]
             val activity = binding?.etActivityName?.text.toString()
@@ -127,6 +126,7 @@ class AddActivityFragment :
     override fun onDestroyView() {
         adapter = null
         disposables.clear()
+        viewModel.resetDoneSaving()
         super.onDestroyView()
     }
 }

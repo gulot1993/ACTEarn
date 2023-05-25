@@ -31,4 +31,6 @@ class SubjectViewModel @Inject constructor(
     fun getQuestionByActivityId(activityId: Int): Single<List<Question>> = repository.getQuestionsByActivityId(activityId)
 
     fun getAnswersByQuestionId(questionId: Int): Single<List<StudentAnswer>> = repository.getAllAnswersByQuestion(questionId, preferenceHelper.getLoggedInUser()!!.id)
+
+    fun getCurrentLoggedInStudent(): com.example.actearn.model.domain.User = preferenceHelper.getLoggedInUser()!!
 }

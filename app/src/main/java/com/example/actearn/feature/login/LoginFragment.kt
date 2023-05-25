@@ -34,6 +34,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
     }
 
     private fun setupViewListeners() {
+        // click event
         binding?.tvRegister?.setOnClickListener {
             findNavController()
                 .navigate(
@@ -44,8 +45,8 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
 
         binding?.btnLogin?.setOnClickListener {
             signIn(
-                binding!!.etEmail.text.toString(),
-                binding!!.etPassword.text.toString()
+                binding!!.etEmail.text.toString(), // professor
+                binding!!.etPassword.text.toString() // password
             )
         }
     }

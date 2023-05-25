@@ -121,4 +121,13 @@ class SharedRepositoryImpl @Inject constructor(
     override fun getDistinctUserIdFromAnswers(): Single<List<Int>> {
         return database.studentAnswerDao().getStudentsAnswerDistinctById()
     }
+
+    override fun saveClaimedReward(rewardId: Int): Completable {
+        return database.studentRewardClaimedDao().saveClaimedReward(StudentRewardClaimed(userId = preferenceHelper.getLoggedInUser()!!.id, rewardId = rewardId))
+    }
+
+    override fun getAllRewardsFromUser(): Single<List<StudentRewardClaimed>> {
+        return database.studentRewardClaimedDao().getClaimedRewards(preferenceHelper.getLoggedInUser()!!.id)
+    }
+
 }

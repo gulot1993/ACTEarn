@@ -30,6 +30,7 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>() {
     }
 
     private fun getData() {
+        // check current logged in nga user
         viewModel.isLoggedIn()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -43,6 +44,7 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>() {
                             )
                     } else {
                         viewModel.getUserLoggedIn()?.let {
+                            // prof , student, dsa
                             if (it.role == "Professor") {
                                 findNavController()
                                     .navigate(

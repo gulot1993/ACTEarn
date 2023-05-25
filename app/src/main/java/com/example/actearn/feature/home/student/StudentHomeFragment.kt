@@ -2,11 +2,18 @@ package com.example.actearn.feature.home.student
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.actearn.R
 import com.example.actearn.core.BaseFragment
 import com.example.actearn.databinding.FragmentDashboardBinding
+import com.example.actearn.feature.home.student.adapter.StudentRewardAdapter
+import com.example.actearn.model.entity.Reward
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.textview.MaterialTextView
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
@@ -40,8 +47,16 @@ class StudentHomeFragment : BaseFragment<FragmentDashboardBinding>() {
             .getPointsAndUser()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribeBy {
-                binding?.tvPoints?.text = it[0].points.sumOf { it.points }.toString()
+            .subscribeBy { user ->
+                viewModel
+                    .getAllRewards()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeBy {
+                        val remainingPoints = user[0].points.sumOf { it.points } - it.sumOf { it.points }
+                        binding?.tvPoints?.text = remainingPoints.toString()
+                    }
+                    .addTo(disposables)
             }
             .addTo(disposables)
     }
@@ -68,6 +83,46 @@ class StudentHomeFragment : BaseFragment<FragmentDashboardBinding>() {
                     R.id.action_studentHomeFragment_to_profileFragment
                 )
         }
+
+        binding!!.imageView6.setOnClickListener {
+            viewModel
+                .getAllRewards()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy { items ->
+                    val filteredItems = items.filter { it.points <= binding!!.tvPoints.text.toString().toInt() }
+                    if (filteredItems.isNotEmpty()) {
+                        showRewardsBottomSheet(filteredItems)
+                    } else {
+                        Toast.makeText(requireContext(), "Points not enough!", Toast.LENGTH_LONG).show()
+                    }
+                }
+                .addTo(disposables)
+        }
+    }
+
+    private fun showRewardsBottomSheet(items: List<Reward>) {
+        val bottomsheet = BottomSheetDialog(requireContext())
+        bottomsheet.setContentView(R.layout.layout_reward_claim_bottomsheet)
+        val rewards = bottomsheet.findViewById<RecyclerView>(R.id.rvRewards)
+
+        val rewardAdapter = StudentRewardAdapter(requireContext(), items) {
+            viewModel
+                .claimReward(it.id)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy {
+                    Toast.makeText(requireContext(), "Reward claimed!", Toast.LENGTH_LONG).show()
+                    bottomsheet.dismiss()
+                }
+                .addTo(disposables)
+        }
+        rewards!!.apply {
+            adapter = rewardAdapter
+            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        }
+
+        bottomsheet.show()
     }
 
     override fun onDestroyView() {
