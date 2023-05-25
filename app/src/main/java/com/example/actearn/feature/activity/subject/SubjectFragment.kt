@@ -109,9 +109,13 @@ class SubjectFragment :
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribeBy {
                                 val quizItemsData = mutableListOf<QuizSubjectData>()
-                                val average = (it.map { it.isAnswerCorrect }.count().toFloat() / questions.size.toFloat()) * 100F
-                                val isPassed = average >= 80
-                                quizItemsData.add(QuizSubjectData(activity, isPassed))
+                                if (it.isNotEmpty())  {
+                                    val average = (it.map { it.isAnswerCorrect }.count().toFloat() / questions.size.toFloat()) * 100F
+                                    val isPassed = average >= 80
+                                    quizItemsData.add(QuizSubjectData(activity, isPassed))
+                                } else {
+                                    quizItemsData.add(QuizSubjectData(activity, null))
+                                }
 
                                 adapter = SubjectActivityAdapter(
                                     requireContext(),
