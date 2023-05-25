@@ -24,5 +24,15 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
 
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tvRemarks"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:text="Passed"
+            android:textColor="@color/red"
+            app:layout_constraintTop_toTopOf="@id/tvTakeQuiz"
+            app:layout_constraintEnd_toStartOf="@id/tvTakeQuiz"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

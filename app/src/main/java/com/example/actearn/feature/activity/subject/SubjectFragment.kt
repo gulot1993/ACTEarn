@@ -13,10 +13,14 @@ import com.example.actearn.R
 import com.example.actearn.core.BaseFragment
 import com.example.actearn.databinding.FragmentSubjectBinding
 import com.example.actearn.feature.activity.subject.adapter.SubjectActivityAdapter
+import com.example.actearn.model.entity.Activity
 import com.example.actearn.model.entity.User
+import com.example.actearn.model.modelview.QuizSubjectData
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.kotlin.Observables
 import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -59,24 +63,76 @@ class SubjectFragment :
             .getActivityByProfAndSubject(profId, subject)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribeBy {
-                Timber.d("activity taken: $it")
-                adapter = SubjectActivityAdapter(
-                    requireContext(),
-                    it
-                ) {
-                    findNavController()
-                        .navigate(
-                            SubjectFragmentDirections
-                                .actionSubjectFragmentToTakeQuizFragment(it.activityId)
-                        )
-                }
-                binding!!.tvNoActivities.isVisible = it.isEmpty()
-                binding!!.rvActivities.apply {
-                    isVisible = !it.isEmpty()
-                    adapter = this@SubjectFragment.adapter
-                    layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-                }
+            .subscribeBy { activities ->
+                Observable
+                    .fromIterable(activities)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeBy {
+                        getQuestionsByActivityId(it, activities)
+                    }
+                    .addTo(disposables)
+//                adapter = SubjectActivityAdapter(
+//                    requireContext(),
+//                    activities
+//                ) {
+//                    findNavController()
+//                        .navigate(
+//                            SubjectFragmentDirections
+//                                .actionSubjectFragmentToTakeQuizFragment(it.activityId)
+//                        )
+//                }
+//                binding!!.tvNoActivities.isVisible = activities.isEmpty()
+//                binding!!.rvActivities.apply {
+//                    isVisible = !activities.isEmpty()
+//                    adapter = this@SubjectFragment.adapter
+//                    layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+//                }
+            }
+            .addTo(disposables)
+    }
+
+    private fun getQuestionsByActivityId(activity: Activity, activities: List<Activity>) {
+        viewModel
+            .getQuestionByActivityId(activityId = activity.activityId)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy { questions ->
+                Observable
+                    .fromIterable(questions)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeBy {
+                        viewModel
+                            .getAnswersByQuestionId(it.questionId)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeBy {
+                                val quizItemsData = mutableListOf<QuizSubjectData>()
+                                val average = (it.map { it.isAnswerCorrect }.count().toFloat() / questions.size.toFloat()) * 100F
+                                val isPassed = average >= 80
+                                quizItemsData.add(QuizSubjectData(activity, isPassed))
+
+                                adapter = SubjectActivityAdapter(
+                                    requireContext(),
+                                    quizItemsData
+                                ) {
+                                    findNavController()
+                                        .navigate(
+                                            SubjectFragmentDirections
+                                                .actionSubjectFragmentToTakeQuizFragment(it.activity.activityId)
+                                        )
+                                }
+                                binding!!.tvNoActivities.isVisible = activities.isEmpty()
+                                binding!!.rvActivities.apply {
+                                    isVisible = !activities.isEmpty()
+                                    adapter = this@SubjectFragment.adapter
+                                    layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+                                }
+                            }
+                            .addTo(disposables)
+                    }
+                    .addTo(disposables)
             }
             .addTo(disposables)
     }
