@@ -36,5 +36,9 @@ class ProfessorHomeFragment : BaseFragment<FragmentProfessorBinding>(){
                     ProfessorHomeFragmentDirections.actionProfessorHomeFragmentToAddActivityFragment()
                 )
         }
+
+        binding?.tvViewActivityRecords?.setOnClickListener {
+
+        }
     }
 }

@@ -16,6 +16,7 @@ import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -48,6 +49,7 @@ class TakeQuizViewModel @Inject constructor(
         }
     }
     fun getQuestionAndChoicesByActivityId(activityId: Int) {
+        val modelView = mutableListOf<QuizQuestionChoicesModelView>()
         repository
             .getQuestionsByActivityId(activityId)
             .subscribeOn(Schedulers.io())
@@ -63,10 +65,8 @@ class TakeQuizViewModel @Inject constructor(
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribeBy { questionWithChoices ->
                                 questionWithChoices.map {
-                                    val modelView = mutableListOf<QuizQuestionChoicesModelView>()
                                     val modelView2 = mutableListOf<QuizChoicesModelView>()
                                     val question = it.question
-                                    val choices = it.choices
                                     it.choices.map {
                                         modelView2.add(QuizChoicesModelView(it))
                                     }
