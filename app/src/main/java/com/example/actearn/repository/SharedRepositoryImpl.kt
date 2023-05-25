@@ -109,4 +109,8 @@ class SharedRepositoryImpl @Inject constructor(
     override fun addReward(name: String, points: Int): Completable {
         return database.rewardsDao().saveReward(Reward(name = name, points = points))
     }
+
+    override fun getRewards(): Single<List<Reward>> {
+        return database.rewardsDao().getAllRewards()
+    }
 }

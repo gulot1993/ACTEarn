@@ -55,4 +55,6 @@ interface SharedRepository {
     fun getAllAnswersByQuestion(questionId: Int): Single<List<StudentAnswer>>
 
     fun addReward(name: String, points: Int): Completable
+
+    fun getRewards(): Single<List<Reward>>
 }
