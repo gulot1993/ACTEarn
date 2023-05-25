@@ -48,7 +48,6 @@ class TakeQuizViewModel @Inject constructor(
         }
     }
     fun getQuestionAndChoicesByActivityId(activityId: Int) {
-        val modelView = mutableListOf<QuizQuestionChoicesModelView>()
         repository
             .getQuestionsByActivityId(activityId)
             .subscribeOn(Schedulers.io())
@@ -64,6 +63,7 @@ class TakeQuizViewModel @Inject constructor(
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribeBy { questionWithChoices ->
                                 questionWithChoices.map {
+                                    val modelView = mutableListOf<QuizQuestionChoicesModelView>()
                                     val modelView2 = mutableListOf<QuizChoicesModelView>()
                                     val question = it.question
                                     val choices = it.choices

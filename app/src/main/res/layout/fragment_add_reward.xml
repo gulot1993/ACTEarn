@@ -35,25 +35,28 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvAddReward" />
 
-        <EditText
-            android:id="@+id/etRewardStocks"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:hint="reward stocks"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/etRewardName" />
 
         <EditText
             android:id="@+id/etRewardPoints"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:hint="reward stocks"
+            android:hint="reward points"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/etRewardStocks" />
+            app:layout_constraintTop_toBottomOf="@+id/etRewardName" />
+
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tvAddRewards"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Add Rewards"
+            android:gravity="center"
+            android:padding="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/etRewardPoints"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

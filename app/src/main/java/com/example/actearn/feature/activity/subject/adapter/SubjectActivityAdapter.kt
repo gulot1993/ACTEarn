@@ -36,6 +36,8 @@ class SubjectActivityAdapter(
                 }
             }
             binding.tvTakeQuiz.apply {
+                isEnabled = data.isPassed == null
+                isClickable = data.isPassed == null
                 setOnClickListener {
                     onItemClicked.invoke(data)
                 }

@@ -105,4 +105,8 @@ class SharedRepositoryImpl @Inject constructor(
     override fun getAllAnswersByQuestion(questionId: Int): Single<List<StudentAnswer>> {
         return database.studentAnswerDao().getAllAnswersByQuestionIdAndUserId(questionId, preferenceHelper.getLoggedInUser()!!.id)
     }
+
+    override fun addReward(name: String, points: Int): Completable {
+        return database.rewardsDao().saveReward(Reward(name = name, points = points))
+    }
 }

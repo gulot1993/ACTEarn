@@ -8,6 +8,5 @@ import androidx.room.PrimaryKey
 data class Reward(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     @ColumnInfo("name") val name: String,
-    @ColumnInfo("points") val points: Int,
-    @ColumnInfo("stocks") val stocks: Int
+    @ColumnInfo("points") val points: Int
 )
