@@ -73,7 +73,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                                 LoginFragmentDirections
                                     .actionLoginFragmentToProfessorHomeFragment()
                             )
-                    } else {
+                    } else if (userDomain.role == "Student"){
                         Timber.d("logged in: ${userDomain.hasClaimedPoints}")
                         if (!userDomain.hasClaimedPoints) {
                             userDomain.hasClaimedPoints = true
@@ -82,6 +82,11 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                             navigateToStudentHome()
                         }
 
+                    } else {
+                        findNavController()
+                            .navigate(
+                                R.id.action_loginFragment_to_dsaHomeFragment
+                            )
                     }
                 }
             )

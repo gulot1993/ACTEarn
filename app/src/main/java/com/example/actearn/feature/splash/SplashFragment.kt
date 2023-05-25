@@ -49,11 +49,16 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>() {
                                         SplashFragmentDirections
                                             .actionSplashFragmentToProfessorHomeFragment()
                                     )
-                            } else {
+                            } else if (it.role == "Student"){
                                 findNavController()
                                     .navigate(
                                         SplashFragmentDirections
                                             .actionSplashFragmentToStudentHomeFragment()
+                                    )
+                            } else {
+                                findNavController()
+                                    .navigate(
+                                        R.id.action_splashFragment_to_dsaHomeFragment
                                     )
                             }
                         }

@@ -24,6 +24,9 @@
         <action
             android:id="@+id/action_splashFragment_to_professorHomeFragment"
             app:destination="@id/professorHomeFragment" />
+        <action
+            android:id="@+id/action_splashFragment_to_dsaHomeFragment"
+            app:destination="@id/dsaHomeFragment" />
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
@@ -38,6 +41,9 @@
         <action
             android:id="@+id/action_loginFragment_to_professorHomeFragment"
             app:destination="@id/professorHomeFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_dsaHomeFragment"
+            app:destination="@id/dsaHomeFragment" />
     </fragment>
     <fragment
         android:id="@+id/signUpFragment"
@@ -95,4 +101,18 @@
         android:id="@+id/profileFragment"
         android:name="com.example.actearn.feature.profile.ProfileFragment"
         tools:layout="@layout/fragment_profile"/>
+
+    <fragment
+        android:id="@+id/dsaHomeFragment"
+        android:name="com.example.actearn.feature.home.dsa.DSAHomeFragment"
+        tools:layout="@layout/fragment_dsa">
+        <action
+            android:id="@+id/action_dsaHomeFragment_to_addRewardFragment"
+            app:destination="@id/addRewardFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/addRewardFragment"
+        android:name="com.example.actearn.feature.rewards.add.AddRewardFragment"
+        tools:layout="@layout/fragment_add_reward"/>
 </navigation>

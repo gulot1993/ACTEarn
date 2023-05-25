@@ -26,7 +26,7 @@ class SignUpFragment :
     AdapterView.OnItemSelectedListener {
 
     private val viewModel: SignUpViewModel by activityViewModels()
-    private val roles = arrayOf("Professor", "Student")
+    private val roles = arrayOf("Professor", "Student", "DSA")
     private val disposables = CompositeDisposable()
     override fun resId(): Int {
         return R.layout.fragment_signup
