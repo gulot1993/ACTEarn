@@ -61,6 +61,13 @@ class StudentHomeFragment : BaseFragment<FragmentDashboardBinding>() {
                     R.id.action_studentHomeFragment_to_subjectFragment
                 )
         }
+
+        binding!!.imageView7.setOnClickListener {
+            findNavController()
+                .navigate(
+                    R.id.action_studentHomeFragment_to_profileFragment
+                )
+        }
     }
 
     override fun onDestroyView() {

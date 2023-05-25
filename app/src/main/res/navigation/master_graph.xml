@@ -51,6 +51,9 @@
         <action
             android:id="@+id/action_studentHomeFragment_to_subjectFragment"
             app:destination="@id/subjectFragment" />
+        <action
+            android:id="@+id/action_studentHomeFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
     </fragment>
     <fragment
         android:id="@+id/professorHomeFragment"
@@ -59,6 +62,9 @@
         <action
             android:id="@+id/action_professorHomeFragment_to_addActivityFragment"
             app:destination="@id/addActivityFragment" />
+        <action
+            android:id="@+id/action_professorHomeFragment_self"
+            app:destination="@id/professorHomeFragment" />
     </fragment>
 
     <fragment
@@ -84,4 +90,9 @@
             android:name="activityId"
             app:argType="integer"/>
     </fragment>
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.actearn.feature.profile.ProfileFragment"
+        tools:layout="@layout/fragment_profile"/>
 </navigation>
