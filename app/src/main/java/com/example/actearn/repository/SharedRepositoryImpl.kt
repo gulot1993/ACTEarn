@@ -97,4 +97,8 @@ class SharedRepositoryImpl @Inject constructor(
     override fun getAllQuestions(questionId: Int): Single<List<QuestionWithChoices>> {
         return database.questionDao().getQuestions(questionId)
     }
+
+    override fun saveStudentAnswer(questionId: Int, answerIndex: Int, isAnswerCorrect: Boolean): Completable {
+        return database.studentAnswerDao().saveAnswer(StudentAnswer(userId = preferenceHelper.getLoggedInUser()!!.id, questionOwnerId = questionId, answerIndex = answerIndex, isAnswerCorrect = isAnswerCorrect))
+    }
 }

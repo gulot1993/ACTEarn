@@ -10,8 +10,9 @@ import com.example.actearn.model.entity.*
     Points::class,
     Activity::class,
     Question::class,
-    Choices::class
- ], version = 4)
+    Choices::class,
+    StudentAnswer::class
+ ], version = 5)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun pointsDao(): PointsDao
@@ -20,4 +21,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun questionDao(): QuestionDao
 
     abstract fun choicesDao(): ChoicesDao
+
+    abstract fun studentAnswerDao(): StudentAnswerDao
 }

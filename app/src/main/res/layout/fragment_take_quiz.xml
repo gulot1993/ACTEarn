@@ -11,6 +11,7 @@
             android:id="@+id/rvQuizzes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:layout_constraintHeight_max="500dp"
             app:layout_constraintTop_toTopOf="parent"/>
 
         <com.google.android.material.textview.MaterialTextView

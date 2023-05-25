@@ -73,7 +73,6 @@ class AddActivityFragment :
     private fun setupListeners() {
         binding?.btnSubmit?.setOnClickListener {
             binding?.btnSubmit?.isEnabled = false
-            Toast.makeText(requireContext(), "Saving pls wait..", Toast.LENGTH_LONG).show()
             val subjects = resources.getStringArray(R.array.subjects)
             val subject = subjects[binding?.spinner?.selectedItemPosition ?: 0]
             val activity = binding?.etActivityName?.text.toString()

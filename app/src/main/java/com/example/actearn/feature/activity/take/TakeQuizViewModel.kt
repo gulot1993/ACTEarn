@@ -3,7 +3,8 @@ package com.example.actearn.feature.activity.take
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.actearn.model.modelview.ChoicesModelView
+import com.example.actearn.core.PreferenceHelper
+import com.example.actearn.model.entity.Question
 import com.example.actearn.model.modelview.QuizChoicesModelView
 import com.example.actearn.model.modelview.QuizQuestionChoicesModelView
 import com.example.actearn.repository.SharedRepository
@@ -14,12 +15,13 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
-import timber.log.Timber
+import io.reactivex.rxjava3.subjects.PublishSubject
 import javax.inject.Inject
 
 @HiltViewModel
 class TakeQuizViewModel @Inject constructor(
-    val repository: SharedRepository
+    val repository: SharedRepository,
+    val preferenceHelper: PreferenceHelper
 ) : ViewModel(){
 
     private val disposables = CompositeDisposable()
@@ -27,6 +29,16 @@ class TakeQuizViewModel @Inject constructor(
     private val _questions = MutableLiveData<MutableList<QuizQuestionChoicesModelView>>()
     val questions: LiveData<MutableList<QuizQuestionChoicesModelView>>
         get() = _questions
+
+    private val _state by lazy {
+        PublishSubject.create<TakeQuizState>()
+    }
+
+    val state: Observable<TakeQuizState> = _state
+
+    private val _doneSaving = MutableLiveData<Boolean>(false)
+    val doneSaving: LiveData<Boolean>
+        get() = _doneSaving
 
     fun updateQuestion(data: QuizQuestionChoicesModelView, position: Int) {
         val existingQuestions = _questions.value
@@ -67,6 +79,66 @@ class TakeQuizViewModel @Inject constructor(
                     .addTo(disposables)
             }
             .addTo(disposables)
+    }
+
+    fun submitAnswers() {
+        val existingQuestions = _questions.value
+        val savedQuestions = mutableListOf<Question>()
+        val correctAnswersCount = mutableListOf<Boolean>()
+
+        Observable.fromIterable(existingQuestions!!)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy { questionAndChoices ->
+                val question = questionAndChoices.question
+                val studentChoiceSelected = questionAndChoices.choices.find { it.isSelected }
+                val indexChoiceSelected = questionAndChoices.choices.indexOf(studentChoiceSelected)
+                val indexCorrectAnswer = question.choicesCorrectAnswerIndex
+                val questionOwnerId = question.questionId
+                val isAnswerCorrect = indexChoiceSelected == indexCorrectAnswer
+
+                if (isAnswerCorrect) {
+                    correctAnswersCount.add(isAnswerCorrect)
+                }
+
+                repository
+                    .saveStudentAnswer(
+                        questionOwnerId,
+                        indexChoiceSelected,
+                        isAnswerCorrect
+                    )
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeBy {
+                        savedQuestions.add(question)
+                        if (existingQuestions.size == savedQuestions.size) {
+
+                            val average = (correctAnswersCount.size.toFloat() / existingQuestions.size.toFloat()) * 100F
+                            if (average.toInt() >= 80) {
+                                // add points
+                                repository
+                                    .savePoints(1, preferenceHelper.getLoggedInUser()!!.id)
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribeBy {
+                                        _state.onNext(
+                                            TakeQuizState.StudentEarnedPoints(1)
+                                        )
+                                        _state.onNext(
+                                            TakeQuizState.NavigateBack
+                                        )
+                                    }
+                                    .addTo(disposables)
+                            } else {
+                                _state.onNext(
+                                    TakeQuizState.NavigateBack
+                                )
+                            }
+                        }
+                    }
+                    .addTo(disposables)
+            }
+            .addTo(compositeDisposable = disposables)
     }
 
     override fun onCleared() {

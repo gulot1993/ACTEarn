@@ -49,4 +49,6 @@ interface SharedRepository {
     fun getQuestionsByActivityId(activityId: Int): Single<List<Question>>
 
     fun getAllQuestions(questionId: Int): Single<List<QuestionWithChoices>>
+
+    fun saveStudentAnswer(questionId: Int, answerIndex: Int, isAnswerCorrect: Boolean): Completable
 }
