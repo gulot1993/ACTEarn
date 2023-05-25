@@ -45,4 +45,8 @@ interface SharedRepository {
     fun getAllProfessors(): Single<List<User>>
 
     fun getActivitiesByProfAndSubject(profId: Int, subject: String): Single<List<Activity>>
+
+    fun getQuestionsByActivityId(activityId: Int): Single<List<Question>>
+
+    fun getAllQuestions(questionId: Int): Single<List<QuestionWithChoices>>
 }

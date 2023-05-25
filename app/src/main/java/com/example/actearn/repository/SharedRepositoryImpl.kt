@@ -89,4 +89,12 @@ class SharedRepositoryImpl @Inject constructor(
     override fun getActivitiesByProfAndSubject(profId: Int, subject: String): Single<List<Activity>> {
         return database.activityDao().getActivityBySubject(profId, subject)
     }
+
+    override fun getQuestionsByActivityId(activityId: Int): Single<List<Question>> {
+        return database.questionDao().getQuestionsByActivityId(activityId)
+    }
+
+    override fun getAllQuestions(questionId: Int): Single<List<QuestionWithChoices>> {
+        return database.questionDao().getQuestions(questionId)
+    }
 }
