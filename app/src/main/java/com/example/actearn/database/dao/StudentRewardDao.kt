@@ -15,4 +15,7 @@ interface StudentRewardDao {
 
     @Query("SELECT * FROM StudentRewardClaimed where userId = :userId")
     fun getClaimedRewards(userId: Int): Single<List<StudentRewardClaimed>>
+
+    @Query("SELECT * FROM StudentRewardClaimed")
+    fun getAllClaimedRewards(): Single<List<StudentRewardClaimed>>
 }

@@ -65,4 +65,14 @@ interface SharedRepository {
     fun saveClaimedReward(rewardId: Int): Completable
 
     fun getAllRewardsFromUser(): Single<List<StudentRewardClaimed>>
+
+    fun getAllStudentsRewards(studentId: Int): Single<List<StudentRewardClaimed>>
+
+    fun getReward(id: Int): Single<Reward>
+
+    fun getClaimedRewards(): Single<List<StudentRewardClaimed>>
+
+    fun updatePoints(points: Int): Completable
+
+    fun getUserPoints(userId: Int): Single<Points>
 }

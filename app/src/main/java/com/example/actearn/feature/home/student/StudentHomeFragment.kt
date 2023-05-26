@@ -16,6 +16,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.textview.MaterialTextView
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.kotlin.subscribeBy
@@ -43,20 +44,13 @@ class StudentHomeFragment : BaseFragment<FragmentDashboardBinding>() {
     }
 
     private fun getPoints() {
+        var points = 0
         viewModel
             .getPointsAndUser()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy { user ->
-                viewModel
-                    .getAllRewards()
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeBy {
-                        val remainingPoints = user[0].points.sumOf { it.points } - it.sumOf { it.points }
-                        binding?.tvPoints?.text = remainingPoints.toString()
-                    }
-                    .addTo(disposables)
+                binding?.tvPoints?.text = user[0].points.sumOf { it.points }.toString()
             }
             .addTo(disposables)
     }
@@ -112,8 +106,18 @@ class StudentHomeFragment : BaseFragment<FragmentDashboardBinding>() {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy {
-                    Toast.makeText(requireContext(), "Reward claimed!", Toast.LENGTH_LONG).show()
-                    bottomsheet.dismiss()
+                    val points = binding!!.tvPoints.text.toString().toInt()
+                    val minusPoints = points - it.points
+                    viewModel
+                        .updatePoints(minusPoints)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeBy {
+                            binding?.tvPoints?.text = minusPoints.toString()
+                            Toast.makeText(requireContext(), "Reward claimed!", Toast.LENGTH_LONG).show()
+                            bottomsheet.dismiss()
+                        }
+                        .addTo(disposables)
                 }
                 .addTo(disposables)
         }

@@ -9,13 +9,16 @@ import com.example.actearn.R
 import com.example.actearn.core.BaseFragment
 import com.example.actearn.databinding.FragmentDsaBinding
 import com.example.actearn.feature.home.dsa.adapter.RewardAdapter
+import com.example.actearn.feature.home.dsa.adapter.StudentClaimedRewardAdapter
 import com.example.actearn.model.entity.Reward
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
+import timber.log.Timber
 
 @AndroidEntryPoint
 class DSAHomeFragment : BaseFragment<FragmentDsaBinding>() {
@@ -23,6 +26,8 @@ class DSAHomeFragment : BaseFragment<FragmentDsaBinding>() {
     private val viewModel: DSAViewModel by activityViewModels()
 
     private var adapter: RewardAdapter? = null
+
+    private var adapter2: StudentClaimedRewardAdapter? = null
 
     private val disposables = CompositeDisposable()
     override fun resId(): Int {
@@ -43,6 +48,36 @@ class DSAHomeFragment : BaseFragment<FragmentDsaBinding>() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy {
                 setupRecyclerView(it)
+            }
+            .addTo(disposables)
+
+
+        viewModel
+            .getAllClaimedRewards()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy {
+                Observable.fromIterable(it)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeBy { studentReward ->
+                        viewModel
+                            .getReward(studentReward.rewardId)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeBy { val reward =
+                                viewModel
+                                    .getAllStudentsRewards(studentReward.id)
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribeBy {
+
+                                    }
+                                    .addTo(disposables)
+                            }
+                            .addTo(disposables)
+                    }
+                    .addTo(disposables)
             }
             .addTo(disposables)
     }
@@ -74,6 +109,7 @@ class DSAHomeFragment : BaseFragment<FragmentDsaBinding>() {
     override fun onDestroy() {
         adapter = null
         disposables.clear()
+        adapter2 = null
         super.onDestroy()
     }
 }

@@ -130,4 +130,24 @@ class SharedRepositoryImpl @Inject constructor(
         return database.studentRewardClaimedDao().getClaimedRewards(preferenceHelper.getLoggedInUser()!!.id)
     }
 
+    override fun getAllStudentsRewards(studentId: Int): Single<List<StudentRewardClaimed>> {
+        return database.studentRewardClaimedDao().getClaimedRewards(studentId)
+    }
+
+    override fun getReward(id: Int): Single<Reward> {
+        return database.rewardsDao().getReward(id)
+    }
+
+    override fun getClaimedRewards(): Single<List<StudentRewardClaimed>> {
+        return database.studentRewardClaimedDao().getAllClaimedRewards()
+    }
+
+    override fun updatePoints(points: Int): Completable {
+        return database.pointsDao().updatePoints(points, preferenceHelper!!.getLoggedInUser()!!.id)
+    }
+
+    override fun getUserPoints(userId: Int): Single<Points> {
+        return database.pointsDao().getUserPoints(userId)
+    }
+
 }

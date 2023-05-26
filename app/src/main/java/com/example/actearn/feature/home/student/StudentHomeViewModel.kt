@@ -3,6 +3,7 @@ package com.example.actearn.feature.home.student
 import androidx.lifecycle.ViewModel
 import com.example.actearn.core.PreferenceHelper
 import com.example.actearn.model.domain.User
+import com.example.actearn.model.entity.Points
 import com.example.actearn.model.entity.Reward
 import com.example.actearn.model.entity.StudentRewardClaimed
 import com.example.actearn.model.entity.UserWithPoint
@@ -29,4 +30,15 @@ class StudentHomeViewModel @Inject constructor(
 
     fun getAllClaimedRewards(): Single<List<StudentRewardClaimed>> = repository.getAllRewardsFromUser()
 
+    fun getAllStudentsRewards(studentId: Int): Single<List<StudentRewardClaimed>> = repository.getAllStudentsRewards(studentId)
+
+    fun getReward(id: Int): Single<Reward> = repository.getReward(id)
+
+    fun updatePoints(points: Int): Completable {
+        return repository.updatePoints(points)
+    }
+
+    fun getUserPoints(userId: Int): Single<Points> {
+        return repository.getUserPoints(userId)
+    }
 }

@@ -15,4 +15,7 @@ interface RewardDao {
 
     @Query("SELECT * FROM Reward")
     fun getAllRewards(): Single<List<Reward>>
+
+    @Query("SELECT * FROM Reward where id = :id")
+    fun getReward(id: Int): Single<Reward>
 }
