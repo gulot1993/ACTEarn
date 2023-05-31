@@ -23,4 +23,7 @@ interface ActivityDao {
 
     @Query("SELECT * FROM Activity where userOwnerId = :profId and subjectId = :subjectId")
     fun getActivityRemarks(subjectId: Int, profId: Int):  Single<List<ActivityWithRemarks>>
+
+    @Query("SELECT * FROM Activity")
+    fun getAllActivities(): Single<List<Activity>>
 }

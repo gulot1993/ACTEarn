@@ -3,10 +3,7 @@ package com.example.actearn.feature.home.student
 import androidx.lifecycle.ViewModel
 import com.example.actearn.core.PreferenceHelper
 import com.example.actearn.model.domain.User
-import com.example.actearn.model.entity.Points
-import com.example.actearn.model.entity.Reward
-import com.example.actearn.model.entity.StudentRewardClaimed
-import com.example.actearn.model.entity.UserWithPoint
+import com.example.actearn.model.entity.*
 import com.example.actearn.repository.SharedRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.core.Completable
@@ -37,6 +34,8 @@ class StudentHomeViewModel @Inject constructor(
     fun updatePoints(points: Int): Completable {
         return repository.updatePoints(points)
     }
+
+    fun getAllActivities(): Single<List<Activity>> = repository.getAllActivities()
 
     fun getUserPoints(userId: Int): Single<Points> {
         return repository.getUserPoints(userId)

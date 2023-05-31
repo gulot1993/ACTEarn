@@ -89,4 +89,6 @@ interface SharedRepository {
     fun saveRemarks(activityId: Int, remarks: String, studentId: Int): Completable
 
     fun getActivityRemarksByProfAndSubject(profId: Int, subjectId: Int): Single<List<ActivityWithRemarks>>
+
+    fun getAllActivities(): Single<List<Activity>>
 }

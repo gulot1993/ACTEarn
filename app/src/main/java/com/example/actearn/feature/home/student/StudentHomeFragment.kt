@@ -3,6 +3,7 @@ package com.example.actearn.feature.home.student
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,15 +14,12 @@ import com.example.actearn.databinding.FragmentDashboardBinding
 import com.example.actearn.feature.home.student.adapter.StudentRewardAdapter
 import com.example.actearn.model.entity.Reward
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.textview.MaterialTextView
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
-import timber.log.Timber
 
 @AndroidEntryPoint
 class StudentHomeFragment : BaseFragment<FragmentDashboardBinding>() {
@@ -39,8 +37,23 @@ class StudentHomeFragment : BaseFragment<FragmentDashboardBinding>() {
         setupViews()
     }
 
+    private fun getAllActivities() {
+        viewModel
+            .getAllActivities()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy {
+                binding!!.notificationCount.apply {
+                    isVisible = it.isNotEmpty()
+                    text = it.count().toString()
+                }
+            }
+            .addTo(disposables)
+    }
+
     private fun setupViews() {
         getPoints()
+        getAllActivities()
     }
 
     private fun getPoints() {

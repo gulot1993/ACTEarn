@@ -181,4 +181,8 @@ class SharedRepositoryImpl @Inject constructor(
         return database.activityDao().getActivityRemarks(subjectId, profId)
     }
 
+    override fun getAllActivities(): Single<List<Activity>> {
+        return database.activityDao().getAllActivities()
+    }
+
 }
