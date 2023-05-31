@@ -43,10 +43,17 @@ class StudentHomeFragment : BaseFragment<FragmentDashboardBinding>() {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy {
-                binding!!.notificationCount.apply {
-                    isVisible = it.isNotEmpty()
-                    text = it.count().toString()
-                }
+                viewModel
+                    .getAllStudentRemarksByStudent()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeBy { remarks ->
+                        binding!!.notificationCount.apply {
+                            isVisible = (it.count() - remarks.count()) != 0
+                            text = (it.count() - remarks.count()).toString()
+                        }
+                    }
+                    .addTo(disposables)
             }
             .addTo(disposables)
     }

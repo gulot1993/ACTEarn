@@ -37,6 +37,8 @@ class StudentHomeViewModel @Inject constructor(
 
     fun getAllActivities(): Single<List<Activity>> = repository.getAllActivities()
 
+    fun getAllStudentRemarksByStudent(): Single<List<StudentRemarks>> = repository.getAllRemarksByStudentId()
+
     fun getUserPoints(userId: Int): Single<Points> {
         return repository.getUserPoints(userId)
     }

@@ -91,4 +91,6 @@ interface SharedRepository {
     fun getActivityRemarksByProfAndSubject(profId: Int, subjectId: Int): Single<List<ActivityWithRemarks>>
 
     fun getAllActivities(): Single<List<Activity>>
+
+    fun getAllRemarksByStudentId(): Single<List<StudentRemarks>>
 }
