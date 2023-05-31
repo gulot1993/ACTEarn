@@ -37,10 +37,6 @@ class TakeQuizViewModel @Inject constructor(
 
     val state: Observable<TakeQuizState> = _state
 
-    private val _doneSaving = MutableLiveData<Boolean>(false)
-    val doneSaving: LiveData<Boolean>
-        get() = _doneSaving
-
     fun updateQuestion(data: QuizQuestionChoicesModelView, position: Int) {
         val existingQuestions = _questions.value
         existingQuestions?.let {
@@ -96,6 +92,7 @@ class TakeQuizViewModel @Inject constructor(
                 val indexCorrectAnswer = question.choicesCorrectAnswerIndex
                 val questionOwnerId = question.questionId
                 val isAnswerCorrect = indexChoiceSelected == indexCorrectAnswer
+                val activityId = question.activityOwnerId
 
                 if (isAnswerCorrect) {
                     correctAnswersCount.add(isAnswerCorrect)
@@ -114,31 +111,50 @@ class TakeQuizViewModel @Inject constructor(
                         if (existingQuestions.size == savedQuestions.size) {
 
                             val average = (correctAnswersCount.size.toFloat() / existingQuestions.size.toFloat()) * 100F
-                            if (average.toInt() >= 80) {
+                            val didPassed = average.toInt() >= 80
+                            val remarks = if (didPassed) "Passed" else "Failed"
+                            if (didPassed) {
                                 // add points
                                 repository
                                     .savePoints(1, preferenceHelper.getLoggedInUser()!!.id)
                                     .subscribeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribeBy {
-                                        _state.onNext(
-                                            TakeQuizState.StudentEarnedPoints(1)
-                                        )
+                                        repository
+                                            .saveRemarks(activityId, remarks, preferenceHelper.getLoggedInUser()!!.id)
+                                            .subscribeOn(Schedulers.io())
+                                            .observeOn(AndroidSchedulers.mainThread())
+                                            .subscribeBy {
+                                                _state.onNext(
+                                                    TakeQuizState.StudentEarnedPoints(1)
+                                                )
+                                                _state.onNext(
+                                                    TakeQuizState.NavigateBack
+                                                )
+                                            }
+                                            .addTo(disposables)
+                                    }
+                                    .addTo(disposables)
+                            } else {
+                                repository
+                                    .saveRemarks(activityId, remarks, preferenceHelper.getLoggedInUser()!!.id)
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribeBy {
                                         _state.onNext(
                                             TakeQuizState.NavigateBack
                                         )
                                     }
                                     .addTo(disposables)
-                            } else {
-                                _state.onNext(
-                                    TakeQuizState.NavigateBack
-                                )
                             }
                         }
                     }
                     .addTo(disposables)
             }
             .addTo(compositeDisposable = disposables)
+    }
+    fun clearQuestions() {
+        _questions.value?.clear()
     }
 
     override fun onCleared() {

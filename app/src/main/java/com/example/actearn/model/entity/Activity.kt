@@ -8,6 +8,6 @@ import androidx.room.PrimaryKey
 data class Activity(
    @PrimaryKey(true) val activityId: Int = 0,
    @ColumnInfo("activityName") val activityName: String,
-   @ColumnInfo("subject") val subject: String,
+   @ColumnInfo("subjectId") val subjectId: Int,
    @ColumnInfo("userOwnerId") val userOwnerId: Int
 )

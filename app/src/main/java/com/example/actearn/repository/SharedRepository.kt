@@ -32,7 +32,7 @@ interface SharedRepository {
 
     fun getUserAndPoints(userId: Int): Single<List<UserWithPoint>>
 
-    fun saveActivity(activityName: String, subject: String): Completable
+    fun saveActivity(activityName: String, subjectId: Int): Completable
 
     fun getActivityByName(activityName: String): Single<Activity>
 
@@ -44,7 +44,7 @@ interface SharedRepository {
 
     fun getAllProfessors(): Single<List<User>>
 
-    fun getActivitiesByProfAndSubject(profId: Int, subject: String): Single<List<Activity>>
+    fun getActivitiesByProfAndSubject(profId: Int, subjectId: Int): Single<List<Activity>>
 
     fun getQuestionsByActivityId(activityId: Int): Single<List<Question>>
 
@@ -52,7 +52,7 @@ interface SharedRepository {
 
     fun saveStudentAnswer(questionId: Int, answerIndex: Int, isAnswerCorrect: Boolean): Completable
 
-    fun getAllAnswersByQuestion(questionId: Int, userId: Int): Single<List<StudentAnswer>>
+    fun getAllAnswersByQuestion(questionId: Int, userId: Int): Single<StudentAnswer>
 
     fun addReward(name: String, points: Int): Completable
 
@@ -77,4 +77,16 @@ interface SharedRepository {
     fun getUserPoints(userId: Int): Single<Points>
 
     fun getUser(user: Int): Single<User>
+
+    fun saveSubject(subject: Subject): Completable
+
+    fun getSubject(id: Int): Single<Subject>
+
+    fun getAllSubject(): Single<List<Subject>>
+
+    fun getAllStudentAnswers(): Single<List<StudentAnswer>>
+
+    fun saveRemarks(activityId: Int, remarks: String, studentId: Int): Completable
+
+    fun getActivityRemarksByProfAndSubject(profId: Int, subjectId: Int): Single<List<ActivityWithRemarks>>
 }

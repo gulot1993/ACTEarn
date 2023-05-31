@@ -35,7 +35,6 @@ class SubjectFragment :
     private val viewModel: SubjectViewModel by activityViewModels()
     private val disposables = CompositeDisposable()
     private var adapter: SubjectActivityAdapter? = null
-    private var adapter2: SubjectActivityAdapter? = null
 
     override fun resId(): Int {
         return R.layout.fragment_subject
@@ -43,110 +42,52 @@ class SubjectFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        setupSpinner()
+        viewModel.getAllSubjects()
         getProfessors()
         setupListeners()
+        setupViewModel()
+    }
+
+    private fun setupViewModel() {
+        viewModel
+            .state
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy {
+                if (it is SubjectState.Subjects) {
+                    setupSpinner()
+                }
+            }
+            .addTo(disposables)
     }
 
     private fun setupListeners() {
         binding!!
             .tvGetActivities
             .setOnClickListener {
-                val subjects = resources.getStringArray(R.array.subjects)
-                val professor = viewModel.getProfessorByIndex(binding!!.spinner2.selectedItemPosition)
-                val subject = subjects[binding!!.spinner.selectedItemPosition]
-                getActivity(professor.userId, subject)
+                val subjects = viewModel.subjects
+                val professor = viewModel.getProfessorByIndex(binding!!.spinner2.selectedItemPosition).userId
+                val subject = subjects[binding!!.spinner.selectedItemPosition].id
+                getStudentRemarks(professor, subject)
             }
     }
 
-    private fun getActivity(profId: Int, subject: String) {
+    private fun getStudentRemarks(profId: Int, subjectId: Int) {
         viewModel
-            .getActivityByProfAndSubject(profId, subject)
+            .getStudentRemarks(profId, subjectId)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribeBy { activities ->
-                Observable
-                    .fromIterable(activities)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeBy {
-                        getQuestionsByActivityId(it, activities)
-                    }
-                    .addTo(disposables)
-            }
-            .addTo(disposables)
-    }
-
-    private fun getQuestionsByActivityId(activity: Activity, activities: List<Activity>) {
-        val quizItemsData = mutableListOf<QuizSubjectData>()
-        val answers = mutableListOf<StudentAnswer>()
-        viewModel
-            .getQuestionByActivityId(activityId = activity.activityId)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeBy { questions ->
-                Observable
-                    .fromIterable(questions)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeBy { question ->
-                        viewModel
-                            .getAnswersByQuestionId(question.questionId)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribeBy {
-                                binding!!.tvNoActivities.isVisible = activities.isEmpty()
-                                if (it.isNotEmpty()) {
-                                    answers.add(it[0])
-                                    if (questions.size == answers.size) {
-                                        val average = (answers.filter { it.isAnswerCorrect }.count().toFloat() / questions.size.toFloat()) * 100F
-                                        val isPassed = average >= 80
-                                        quizItemsData.add(QuizSubjectData(activity, isPassed))
-
-                                        adapter = SubjectActivityAdapter(
-                                            requireContext(),
-                                            quizItemsData
-                                        ) {
-                                            findNavController()
-                                                .navigate(
-                                                    SubjectFragmentDirections
-                                                        .actionSubjectFragmentToTakeQuizFragment(it.activity.activityId)
-                                                )
-                                        }
-                                        binding!!.rvActivities.apply {
-                                            isVisible = !activities.isEmpty()
-                                            adapter = this@SubjectFragment.adapter
-                                            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-                                        }
-                                    }
-                                } else {
-                                    val emptyQuizItemsData = mutableListOf<QuizSubjectData>()
-                                    val userId = viewModel.getCurrentLoggedInStudent().id
-                                    answers.add(StudentAnswer(userId, question.questionId, -1, -1, false))
-                                    emptyQuizItemsData.add(QuizSubjectData(activity, null))
-
-                                    adapter2 = SubjectActivityAdapter(
-                                        requireContext(),
-                                        emptyQuizItemsData
-                                    ) {
-                                        findNavController()
-                                            .navigate(
-                                                SubjectFragmentDirections
-                                                    .actionSubjectFragmentToTakeQuizFragment(it.activity.activityId)
-                                            )
-                                    }
-                                    binding!!.tvAvailableActivities.isVisible = !activities.isEmpty()
-                                    binding!!.rvA.apply {
-                                        isVisible = !activities.isEmpty()
-                                        adapter = this@SubjectFragment.adapter2
-                                        layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-                                    }
-                                }
-                            }
-                            .addTo(disposables)
-                    }
-                    .addTo(disposables)
+            .subscribeBy {
+                adapter = SubjectActivityAdapter(requireContext(), it) { remarks ->
+                    findNavController()
+                        .navigate(
+                            SubjectFragmentDirections
+                                .actionSubjectFragmentToTakeQuizFragment(activityId = remarks.activity.activityId)
+                        )
+                }
+                binding!!.rvActivities.apply {
+                    isVisible = it.isNotEmpty()
+                    adapter = this@SubjectFragment.adapter
+                }
             }
             .addTo(disposables)
     }
@@ -181,8 +122,8 @@ class SubjectFragment :
     }
 
     private fun setupSpinner() {
-        val subjects = resources.getStringArray(R.array.subjects)
-        val adapter = object: ArrayAdapter<Any>(requireContext(), android.R.layout.simple_spinner_item, subjects) {
+        val subjects = viewModel.subjects
+        val adapter = object: ArrayAdapter<Any>(requireContext(), android.R.layout.simple_spinner_item, subjects.map { it.name }) {
             override fun getDropDownView(
                 position: Int,
                 convertView: View?,

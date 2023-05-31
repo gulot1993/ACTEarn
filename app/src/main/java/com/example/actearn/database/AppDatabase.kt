@@ -14,8 +14,9 @@ import com.example.actearn.model.entity.*
     StudentAnswer::class,
     Reward::class,
     StudentRewardClaimed::class,
-    Subject::class
- ], version = 1)
+    Subject::class,
+    StudentRemarks::class
+ ], version = 2)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun pointsDao(): PointsDao
@@ -30,4 +31,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun rewardsDao(): RewardDao
 
     abstract fun studentRewardClaimedDao(): StudentRewardDao
+
+    abstract fun subjectDao(): SubjectDao
+
+    abstract fun studentRemarksDao(): StudentRemarksDao
 }

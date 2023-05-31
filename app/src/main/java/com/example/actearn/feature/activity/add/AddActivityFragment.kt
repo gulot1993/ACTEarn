@@ -35,9 +35,10 @@ class AddActivityFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupSpinner()
+        viewModel.getAllSubjects()
         setupListeners()
         setupViewModel()
+        setupSpinner()
     }
 
     private fun setupRecyclerView() {
@@ -68,12 +69,22 @@ class AddActivityFragment :
                 findNavController().popBackStack()
             }
         }
+
+        viewModel
+            .state
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy {
+                if (it is AddActivityState.Subjects) {
+                    setupSpinner()
+                }
+            }
+            .addTo(disposables)
     }
 
     private fun setupListeners() {
         binding?.btnSubmit?.setOnClickListener {
-            val subjects = resources.getStringArray(R.array.subjects)
-            val subject = subjects[binding?.spinner?.selectedItemPosition ?: 0]
+            val subjects = viewModel.subjects
+            val subject = subjects[binding?.spinner?.selectedItemPosition ?: 0].id
             val activity = binding?.etActivityName?.text.toString()
             viewModel.saveQuestions(activity, subject)
                 .subscribeOn(Schedulers.io())
@@ -100,8 +111,8 @@ class AddActivityFragment :
     }
 
     private fun setupSpinner() {
-        val subjects = resources.getStringArray(R.array.subjects)
-        val adapter = object: ArrayAdapter<Any>(requireContext(), android.R.layout.simple_spinner_item, subjects) {
+        val subjects = viewModel.subjects
+        val adapter = object: ArrayAdapter<Any>(requireContext(), android.R.layout.simple_spinner_item, subjects.map { it.name }) {
             override fun getDropDownView(
                 position: Int,
                 convertView: View?,

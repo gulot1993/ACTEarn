@@ -125,6 +125,7 @@ class TakeQuizFragment : BaseFragment<FragmentTakeQuizBinding>() {
     override fun onDestroy() {
         countDownTimer?.cancel()
         countDownTimer = null
+        viewModel.clearQuestions()
         super.onDestroy()
     }
 }

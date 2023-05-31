@@ -5,7 +5,9 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-data class Subject(
+data class StudentRemarks(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    @ColumnInfo("name") val name: String
+    @ColumnInfo("activityOwnerId") val activityOwnerId: Int,
+    @ColumnInfo("remarks") val remarks: String,
+    @ColumnInfo("studentId") val studentId: Int
 )

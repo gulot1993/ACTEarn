@@ -15,11 +15,14 @@ interface StudentAnswerDao {
     fun saveAnswer(answer: StudentAnswer): Completable
 
     @Query("SELECT * FROM StudentAnswer where questionOwnerId = :questionId and userId = :userId")
-    fun getAllAnswersByQuestionIdAndUserId(questionId: Int, userId: Int): Single<List<StudentAnswer>>
+    fun getAllAnswersByQuestionIdAndUserId(questionId: Int, userId: Int): Single<StudentAnswer>
 
     @Query("SELECT * FROM StudentAnswer where questionOwnerId = :questionId")
     fun getAllAnswersByQuestionId(questionId: Int): Single<List<StudentAnswer>>
 
     @Query("SELECT DISTINCT userId from StudentAnswer")
     fun getStudentsAnswerDistinctById(): Single<List<Int>>
+
+    @Query("SELECT * FROM StudentAnswer where userId = :userId")
+    fun getAllStudentAnswers(userId: Int): Single<List<StudentAnswer>>
 }

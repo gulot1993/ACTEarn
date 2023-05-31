@@ -4,8 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.actearn.core.PreferenceHelper
+import com.example.actearn.feature.activity.take.TakeQuizState
 import com.example.actearn.model.entity.Activity
 import com.example.actearn.model.entity.Choices
+import com.example.actearn.model.entity.Subject
 import com.example.actearn.model.modelview.ChoicesModelView
 import com.example.actearn.model.modelview.QuestionChoicesModelView
 import com.example.actearn.repository.SharedRepository
@@ -19,6 +21,7 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
+import io.reactivex.rxjava3.subjects.PublishSubject
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -35,6 +38,27 @@ class AddActivityViewModel @Inject constructor(
         get() = _doneSaving
 
     private val disposables = CompositeDisposable()
+
+    val subjects = mutableListOf<Subject>()
+
+    private val _state by lazy {
+        PublishSubject.create<AddActivityState>()
+    }
+
+    val state: Observable<AddActivityState> = _state
+
+    fun getAllSubjects() {
+        repository
+            .getAllSubject()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy {
+                subjects.clear()
+                subjects.addAll(it)
+                _state.onNext(AddActivityState.Subjects(subjects))
+            }
+            .addTo(disposables)
+    }
     fun addEmptyQuestionaire() {
         var questionaires = _questionsWithChoices.value
         if (questionaires == null) questionaires = mutableListOf()
@@ -60,9 +84,9 @@ class AddActivityViewModel @Inject constructor(
 
     fun saveQuestions(
         activity: String,
-        subject: String
+        subjectId: Int
     ): Completable {
-        return repository.saveActivity(activity, subject)
+        return repository.saveActivity(activity, subjectId)
     }
 
     fun getActivityByName(name: String): Single<Activity> = repository.getActivityByName(name)

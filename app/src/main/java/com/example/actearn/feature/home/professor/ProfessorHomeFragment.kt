@@ -43,5 +43,11 @@ class ProfessorHomeFragment : BaseFragment<FragmentProfessorBinding>(){
                     ProfessorHomeFragmentDirections.actionProfessorHomeFragmentToViewStudentRecords()
                 )
         }
+
+        binding?.tvAddSubject?.setOnClickListener {
+            findNavController().navigate(
+                R.id.action_professorHomeFragment_to_addSubjectFragment
+            )
+        }
     }
 }

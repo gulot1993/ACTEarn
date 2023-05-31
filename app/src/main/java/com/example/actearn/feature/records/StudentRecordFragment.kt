@@ -46,13 +46,26 @@ class StudentRecordFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupSpinner()
+        viewModel.getAllSubjects()
         setupListener()
+        setupViewModel()
+    }
+
+    private fun setupViewModel() {
+        viewModel
+            .state
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy {
+                if (it is RecordState.Subjects) {
+                    setupSpinner()
+                }
+            }
+            .addTo(disposables)
     }
 
     private fun setupListener() {
         binding!!.tvGetRecords.setOnClickListener {
-            val subjects = resources.getStringArray(R.array.subjects)
+            val subjects = viewModel.subjects
             val subject = subjects[binding!!.spinner.selectedItemPosition]
             val activity = viewModel.getSelectedActivity(binding!!.spinner2.selectedItemPosition)
 
@@ -85,6 +98,7 @@ class StudentRecordFragment :
                                     requireContext(),
                                     users
                                 ) { user ->
+                                    Timber.d("view records of student: $user $activityId")
                                     viewModel
                                         .getQuestionByActivityId(activityId = activityId)
                                         .subscribeOn(Schedulers.io())
@@ -102,24 +116,18 @@ class StudentRecordFragment :
                                                         .subscribeOn(Schedulers.io())
                                                         .observeOn(AndroidSchedulers.mainThread())
                                                         .subscribeBy {
-                                                            if (it.isEmpty()) {
-                                                                Toast.makeText(requireContext(), "Not taken exam yet", Toast.LENGTH_LONG).show()
-                                                            } else {
-                                                                quizItemsData.add(it[0])
-                                                                if (quizItemsData.size == questionsList.size) {
-                                                                    var average = 0F
-                                                                    val passed = if (quizItemsData.isNotEmpty())  {
-                                                                        average = (quizItemsData.filter { it.isAnswerCorrect }.count().toFloat() / questionsList.size.toFloat()) * 100F
-                                                                        average >= 80
-                                                                    } else {
-                                                                        false
-                                                                    }
-
-                                                                    Timber.d("correct answer count ${quizItemsData.map { it.isAnswerCorrect }.count()} ${questionsList.size}")
-
-                                                                    Timber.d("total points $")
-                                                                    showBottomSheet(average, user, passed, points)
+                                                            quizItemsData.add(it)
+                                                            if (quizItemsData.size == questionsList.size) {
+                                                                var average = 0F
+                                                                val passed = if (quizItemsData.isNotEmpty())  {
+                                                                    average = (quizItemsData.filter { it.isAnswerCorrect }.count().toFloat() / questionsList.size.toFloat()) * 100F
+                                                                    average >= 80
+                                                                } else {
+                                                                    false
                                                                 }
+
+                                                                quizItemsData.clear()
+                                                                showBottomSheet(average, user, passed, points)
                                                             }
 
                                                         }
@@ -141,8 +149,8 @@ class StudentRecordFragment :
     }
 
     private fun setupSpinner() {
-        val subjects = resources.getStringArray(R.array.subjects)
-        val adapter = object: ArrayAdapter<Any>(requireContext(), android.R.layout.simple_spinner_item, subjects) {
+        val subjects = viewModel.subjects
+        val adapter = object: ArrayAdapter<Any>(requireContext(), android.R.layout.simple_spinner_item, subjects.map { it.name }) {
             override fun getDropDownView(
                 position: Int,
                 convertView: View?,
@@ -157,8 +165,8 @@ class StudentRecordFragment :
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        val subjects = resources.getStringArray(R.array.subjects)
-        val subject = subjects[position]
+        val subjects = viewModel.subjects
+        val subject = subjects[position].id
 
         viewModel
             .getActivitiesBySubject(subject)

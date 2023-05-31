@@ -62,8 +62,8 @@ class SharedRepositoryImpl @Inject constructor(
         return database.userDao().getUserAndPoints(userId)
     }
 
-    override fun saveActivity(activityName: String, subject: String): Completable {
-        return database.activityDao().saveActivity(Activity(activityName = activityName, subject = subject, userOwnerId = preferenceHelper.getLoggedInUser()?.id!!))
+    override fun saveActivity(activityName: String, subjectId: Int): Completable {
+        return database.activityDao().saveActivity(Activity(activityName = activityName, subjectId = subjectId, userOwnerId = preferenceHelper.getLoggedInUser()?.id!!))
     }
 
     override fun getActivityByName(activityName: String): Single<Activity> {
@@ -86,8 +86,8 @@ class SharedRepositoryImpl @Inject constructor(
         return database.userDao().getAllProfessors()
     }
 
-    override fun getActivitiesByProfAndSubject(profId: Int, subject: String): Single<List<Activity>> {
-        return database.activityDao().getActivityBySubject(profId, subject)
+    override fun getActivitiesByProfAndSubject(profId: Int, subjectId: Int): Single<List<Activity>> {
+        return database.activityDao().getActivityBySubject(profId, subjectId)
     }
 
     override fun getQuestionsByActivityId(activityId: Int): Single<List<Question>> {
@@ -102,7 +102,7 @@ class SharedRepositoryImpl @Inject constructor(
         return database.studentAnswerDao().saveAnswer(StudentAnswer(userId = preferenceHelper.getLoggedInUser()!!.id, questionOwnerId = questionId, answerIndex = answerIndex, isAnswerCorrect = isAnswerCorrect))
     }
 
-    override fun getAllAnswersByQuestion(questionId: Int, userId: Int): Single<List<StudentAnswer>> {
+    override fun getAllAnswersByQuestion(questionId: Int, userId: Int): Single<StudentAnswer> {
         return database.studentAnswerDao().getAllAnswersByQuestionIdAndUserId(questionId, userId)
     }
 
@@ -152,6 +152,33 @@ class SharedRepositoryImpl @Inject constructor(
 
     override fun getUser(user: Int): Single<User> {
         return database.userDao().getUser(user)
+    }
+
+    override fun saveSubject(subject: Subject): Completable {
+        return database.subjectDao().save(subject)
+    }
+
+    override fun getSubject(id: Int): Single<Subject> {
+        return database.subjectDao().get(id)
+    }
+
+    override fun getAllSubject(): Single<List<Subject>> {
+        return database.subjectDao().all()
+    }
+
+    override fun getAllStudentAnswers(): Single<List<StudentAnswer>> {
+        return database.studentAnswerDao().getAllStudentAnswers(preferenceHelper.getLoggedInUser()!!.id)
+    }
+
+    override fun saveRemarks(activityId: Int, remarks: String, studentId: Int): Completable {
+        return database.studentRemarksDao().save(StudentRemarks(activityOwnerId = activityId, remarks = remarks, studentId = studentId))
+    }
+
+    override fun getActivityRemarksByProfAndSubject(
+        profId: Int,
+        subjectId: Int
+    ): Single<List<ActivityWithRemarks>> {
+        return database.activityDao().getActivityRemarks(subjectId, profId)
     }
 
 }
