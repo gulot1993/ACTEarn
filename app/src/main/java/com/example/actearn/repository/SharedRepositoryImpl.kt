@@ -150,4 +150,8 @@ class SharedRepositoryImpl @Inject constructor(
         return database.pointsDao().getUserPoints(userId)
     }
 
+    override fun getUser(user: Int): Single<User> {
+        return database.userDao().getUser(user)
+    }
+
 }

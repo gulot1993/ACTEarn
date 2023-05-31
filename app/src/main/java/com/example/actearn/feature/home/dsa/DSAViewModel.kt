@@ -3,6 +3,7 @@ package com.example.actearn.feature.home.dsa
 import androidx.lifecycle.ViewModel
 import com.example.actearn.model.entity.Reward
 import com.example.actearn.model.entity.StudentRewardClaimed
+import com.example.actearn.model.entity.User
 import com.example.actearn.model.modelview.StudentClaimedReward
 import com.example.actearn.repository.SharedRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,4 +21,6 @@ class DSAViewModel @Inject constructor(
     fun getReward(id: Int): Single<Reward> = repository.getReward(id)
 
     fun getAllClaimedRewards(): Single<List<StudentRewardClaimed>> = repository.getClaimedRewards()
+
+    fun getUser(userId: Int): Single<User> = repository.getUser(userId)
 }

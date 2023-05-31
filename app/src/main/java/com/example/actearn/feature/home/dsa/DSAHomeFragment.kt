@@ -11,6 +11,8 @@ import com.example.actearn.databinding.FragmentDsaBinding
 import com.example.actearn.feature.home.dsa.adapter.RewardAdapter
 import com.example.actearn.feature.home.dsa.adapter.StudentClaimedRewardAdapter
 import com.example.actearn.model.entity.Reward
+import com.example.actearn.model.entity.StudentRewardClaimed
+import com.example.actearn.model.modelview.StudentClaimedReward
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
@@ -52,6 +54,7 @@ class DSAHomeFragment : BaseFragment<FragmentDsaBinding>() {
             .addTo(disposables)
 
 
+        val studentClaimedReward = mutableListOf<StudentClaimedReward>()
         viewModel
             .getAllClaimedRewards()
             .subscribeOn(Schedulers.io())
@@ -65,13 +68,32 @@ class DSAHomeFragment : BaseFragment<FragmentDsaBinding>() {
                             .getReward(studentReward.rewardId)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribeBy { val reward =
+                            .subscribeBy { reward ->
                                 viewModel
-                                    .getAllStudentsRewards(studentReward.id)
+                                    .getAllStudentsRewards(studentReward.userId)
                                     .subscribeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribeBy {
+                                        val user = it[0].userId
+                                        viewModel
+                                            .getUser(user)
+                                            .subscribeOn(Schedulers.io())
+                                            .observeOn(AndroidSchedulers.mainThread())
+                                            .subscribeBy {
+                                                Timber.d("data:: ${it.firstname} ${reward.name}")
+                                                studentClaimedReward.add(StudentClaimedReward(rewardNane = reward.name, "${it.firstname} ${it.lastname}"))
 
+                                                adapter2 = StudentClaimedRewardAdapter(
+                                                    requireContext(),
+                                                    studentClaimedReward
+                                                )
+
+                                                binding!!.rvClaimedRewards.apply {
+                                                    adapter = adapter2
+                                                    layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+                                                }
+                                            }
+                                            .addTo(disposables)
                                     }
                                     .addTo(disposables)
                             }

@@ -75,4 +75,6 @@ interface SharedRepository {
     fun updatePoints(points: Int): Completable
 
     fun getUserPoints(userId: Int): Single<Points>
+
+    fun getUser(user: Int): Single<User>
 }

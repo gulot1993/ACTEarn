@@ -28,4 +28,7 @@ interface UserDao {
     @Transaction
     @Query("SELECT * FROM User where userId = :userId")
     fun getAllProfessorActivities(userId: Int): Single<List<UserWithActivity>>
+
+    @Query("SELECT * FROM User where userId = :userId")
+    fun getUser(userId: Int): Single<User>
 }
